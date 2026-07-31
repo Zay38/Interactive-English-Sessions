@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
   nameInput.value = Scoreboard.getSavedName();
 
   document.getElementById('startBtn').addEventListener('click', () => {
-    const name = nameInput.value.trim() || '친구';
+    const name = nameInput.value.trim() || 'Friend';
     Scoreboard.saveName(name);
     engine.next();
   });
@@ -194,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkinOptions.forEach(opt => {
     const btn = Activities.el('button', { class: 'checkin-btn', type: 'button' }, [
       opt.emoji,
+      Activities.el('span', { class: 'label-en' }, opt.en),
       Activities.el('span', { class: 'label kr' }, opt.kr),
     ]);
     btn.addEventListener('click', () => {
@@ -238,12 +239,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (id === 'screen-practice-feelings') {
       renderOnce(id, () => {
         const title = document.getElementById('practiceFeelingsTitle');
-        const instruction = document.getElementById('practiceFeelingsInstruction');
+        const instrEn = document.getElementById('practiceFeelingsInstrEn');
+        const instrKr = document.getElementById('practiceFeelingsInstrKr');
         const body = document.getElementById('practiceFeelingsBody');
 
         function startPhaseB() {
-          title.textContent = 'Answer the Question! 질문에 대답하기';
-          instruction.textContent = '이번엔 질문을 보고, 알맞은 대답을 골라봐요!';
+          title.innerHTML = 'Answer the Question! <span class="kr">질문에 대답하기</span>';
+          instrEn.textContent = 'Now read the question and pick the right answer!';
+          instrKr.textContent = '질문을 보고 알맞은 대답을 골라봐요!';
           Activities.renderMultipleChoiceQuiz(body, qaMatchQuestions, {
             onAnswer: (correct) => { if (correct) points.add(10); },
           });
@@ -290,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (id === 'screen-finish') {
       renderOnce(id, () => {
-        const name = Scoreboard.getSavedName() || '친구';
+        const name = Scoreboard.getSavedName() || 'Friend';
         document.getElementById('finishHeading').textContent = `Great Job, ${name}!`;
         document.getElementById('finalScoreText').textContent = `${points.total} pt`;
 
