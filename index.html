@@ -7,15 +7,24 @@
 <meta name="description" content="Zoom 화상 영어 수업을 위한 인터랙티브 학습 자료 — 문법, 어휘, 스피킹 액티비티" />
 <link rel="stylesheet" href="assets/css/main.css" />
 <style>
-  .hero { text-align: center; padding: 30px 10px 40px; }
-  .hero .emoji-row { font-size: 2.6rem; margin-bottom: 12px; }
-  .level-section { margin-bottom: 44px; }
-  .level-heading { display: flex; align-items: baseline; gap: 10px; margin-bottom: 18px; }
-  .level-heading h2 { margin: 0; }
-  .unit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-  .how-it-works { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-top: 18px; }
-  .how-card { text-align: center; padding: 20px 14px; }
-  .how-card .step-emoji { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+  .hero { text-align: center; padding: 26px 10px 36px; }
+  .hero .emoji-row { font-size: 2.4rem; margin-bottom: 10px; }
+  .level-section { margin-bottom: 40px; }
+  .level-heading { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
+  .level-heading h2 { margin: 0; font-size: 1.3rem; }
+  .level-heading .level-sub { color: var(--color-ink-soft); font-weight: 600; font-size: 0.9rem; }
+  .level-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 10px;
+    font-family: var(--font-display); font-weight: 800; font-size: 0.85rem; color: #fff;
+  }
+  .level-pill.beg { background: var(--color-green); }
+  .level-pill.int { background: var(--color-secondary); }
+  .level-pill.adv { background: var(--color-purple); }
+  .unit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .how-it-works { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+  .how-card { text-align: center; padding: 16px 12px; }
+  .how-card .step-emoji { font-size: 2rem; display: block; margin-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -28,12 +37,14 @@
   <section class="hero">
     <div class="emoji-row">🎧 📚 🎮 🗣️</div>
     <h1>Zoom 영어 수업, 함께 클릭하며 배워요</h1>
-    <p class="kr muted">아래 유닛을 눌러서 선생님과 화면을 공유하고, 아이들이 직접 클릭하며 함께 참여하는 인터랙티브 영어 수업이에요.<br/>Grammar · Vocabulary · Fun Speaking Activities</p>
+    <p class="kr muted">유닛을 눌러서 선생님과 화면을 공유하고, 직접 클릭하며 참여하는 인터랙티브 영어 수업이에요.<br/>Grammar · Vocabulary · Fun Speaking Activities · 세션당 약 20-25분</p>
   </section>
 
   <section class="level-section">
     <div class="level-heading">
-      <h2>🟠 초등 저학년 (3-4학년, 8-10세)</h2>
+      <span class="level-pill beg">Beg</span>
+      <h2>Beginner</h2>
+      <span class="level-sub kr">1-2학년 눈높이</span>
     </div>
     <div class="unit-grid">
       <a class="unit-card" href="units/family-feelings/index.html">
@@ -41,9 +52,9 @@
         <h3>Unit 1: My Family &amp; My Feelings</h3>
         <p class="kr muted">가족과 감정을 영어로 소개해요 — This is my mom. I am happy!</p>
         <div class="unit-tags">
-          <span class="tag grammar">Grammar: This is / He is / She is / I am</span>
-          <span class="tag vocab">Vocab: 16 words</span>
-          <span class="tag speak">Speaking: Mystery Box, Interview</span>
+          <span class="tag grammar">This is / He is / She is / I am</span>
+          <span class="tag vocab">Vocab 16</span>
+          <span class="tag speak">Speaking x2</span>
         </div>
       </a>
 
@@ -53,14 +64,22 @@
         <h3>Unit 2: Hello, Friend!</h3>
         <p class="kr muted">인사와 자기소개 — Hello, What's your name?, I like ~</p>
       </div>
+    </div>
+  </section>
 
+  <section class="level-section">
+    <div class="level-heading">
+      <span class="level-pill int">Int</span>
+      <h2>Intermediate</h2>
+      <span class="level-sub kr">3-4학년 눈높이</span>
+    </div>
+    <div class="unit-grid">
       <div class="unit-card locked">
         <span class="coming-soon-badge">SOON</span>
         <span class="unit-emoji">⏰</span>
         <h3>Unit 3: My Daily Routine</h3>
         <p class="kr muted">일상 루틴과 시간 — wake up, go to school, What time do you~?</p>
       </div>
-
       <div class="unit-card locked">
         <span class="coming-soon-badge">SOON</span>
         <span class="unit-emoji">🎨</span>
@@ -72,7 +91,9 @@
 
   <section class="level-section">
     <div class="level-heading">
-      <h2>🔵 초등 고학년 (5-6학년, 11-12세)</h2>
+      <span class="level-pill adv">Adv</span>
+      <h2>Advanced</h2>
+      <span class="level-sub kr">5-6학년 눈높이</span>
     </div>
     <div class="unit-grid">
       <div class="unit-card locked">
@@ -111,7 +132,7 @@
       </div>
       <div class="how-card">
         <span class="step-emoji">🖱️</span>
-        <p class="kr"><strong>2. 클릭하며 참여</strong><br/>학생이 직접 카드를 뒤집고, 게임을 클릭하며 활동해요.</p>
+        <p class="kr"><strong>2. 클릭하며 참여</strong><br/>이름을 적고, 카드와 게임을 클릭하며 포인트를 모아요.</p>
       </div>
       <div class="how-card">
         <span class="step-emoji">🔊</span>
@@ -119,7 +140,7 @@
       </div>
       <div class="how-card">
         <span class="step-emoji">🎤</span>
-        <p class="kr"><strong>4. 선생님과 대화</strong><br/>말하기 활동에서 선생님과 실제로 영어로 대화를 나눠요.</p>
+        <p class="kr"><strong>4. 선생님과 대화</strong><br/>질문과 대답을 짝지어 배우고, 실제로 영어로 대화를 나눠요.</p>
       </div>
     </div>
   </section>
