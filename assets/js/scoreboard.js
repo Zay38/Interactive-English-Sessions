@@ -71,17 +71,20 @@ class PointsTracker {
 }
 
 function renderCompareLine(container, myPoints, stats) {
+  function set(en, kr) {
+    container.innerHTML = `${en}<br><span class="kr" style="font-size:0.8rem;font-weight:600;">${kr}</span>`;
+  }
   if (!stats || stats.count === 0) {
-    container.textContent = '🌟 이 수업의 첫 번째 학생이에요! 다음 친구들의 기준이 될 거예요.';
+    set('🌟 You\'re the first player on this device!', '이 수업의 첫 번째 학생이에요!');
     return;
   }
   const diff = myPoints - stats.average;
   if (diff > 0) {
-    container.textContent = `📈 이 기기에서 함께한 친구 ${stats.count}명 평균은 ${stats.average}점! 너는 평균보다 ${diff}점 더 높아요!`;
+    set(`📈 Class average: ${stats.average}pt. You're ${diff}pt above average!`, `친구 ${stats.count}명 평균보다 ${diff}점 더 높아요!`);
   } else if (diff < 0) {
-    container.textContent = `💪 이 기기에서 함께한 친구 ${stats.count}명 평균은 ${stats.average}점! 조금만 더 연습하면 평균을 넘을 수 있어요.`;
+    set(`💪 Class average: ${stats.average}pt. Keep practicing to beat it!`, `친구 ${stats.count}명 평균보다 조금 낮아요. 연습해봐요!`);
   } else {
-    container.textContent = `🎯 이 기기에서 함께한 친구 ${stats.count}명 평균과 정확히 같아요!`;
+    set(`🎯 Right on the class average: ${stats.average}pt!`, `친구 ${stats.count}명 평균과 정확히 같아요!`);
   }
 }
 

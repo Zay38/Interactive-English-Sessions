@@ -69,7 +69,7 @@ class LessonEngine {
       this.stepLabelEl.textContent = `${index + 1} / ${this.steps.length} · ${this.steps[index].label}`;
     }
     if (this.prevBtn) this.prevBtn.disabled = index === 0;
-    if (this.nextBtn) this.nextBtn.textContent = index === this.steps.length - 1 ? '완료 🎉' : '다음 ➜';
+    if (this.nextBtn) this.nextBtn.textContent = index === this.steps.length - 1 ? 'Finish 🎉' : 'Next ➜';
 
     this._refreshDots();
     document.dispatchEvent(new CustomEvent('lesson:screenchange', { detail: { index, id: this.steps[index].id } }));

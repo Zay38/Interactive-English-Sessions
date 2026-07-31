@@ -53,7 +53,7 @@ const Activities = (() => {
       const back = el('div', { class: 'flash-face flash-back' }, [
         el('div', { class: 'example-en' }, item.exampleEn || item.en),
         el('div', { class: 'example-kr' }, item.exampleKr || item.kr),
-        el('div', { class: 'hint' }, '👆 다시 눌러서 돌아가기'),
+        el('div', { class: 'hint' }, '👆 Tap to flip back 다시 눌러서 돌아가기'),
       ]);
       inner.appendChild(front);
       inner.appendChild(back);
@@ -76,7 +76,7 @@ const Activities = (() => {
     container.innerHTML = '';
     const head = el('div', { class: 'row between' }, [
       el('div', { class: 'step-label' }, `Round ${roundIndex + 1} / ${order.length}`),
-      el('button', { class: 'btn secondary small', type: 'button', onclick: () => replay() }, ['🔊 ', el('span', {}, '다시 듣기')]),
+      el('button', { class: 'btn secondary small', type: 'button', onclick: () => replay() }, ['🔊 ', el('span', {}, 'Listen again 다시 듣기')]),
     ]);
     const grid = el('div', { class: 'choice-grid' });
     const feedback = el('div', { class: 'feedback-banner' });
@@ -112,11 +112,11 @@ const Activities = (() => {
       btn.classList.add(correct ? 'correct' : 'wrong');
       if (correct) {
         score++;
-        feedback.textContent = '✅ 정답이에요! Great job!';
+        feedback.textContent = '✅ Great job! 정답이에요!';
         feedback.className = 'feedback-banner show good';
       } else {
         [...grid.children].find(b => b.textContent.includes(target.en))?.classList.add('correct');
-        feedback.textContent = `❌ 다시 들어볼까요? Answer: ${target.en}`;
+        feedback.textContent = `❌ Not quite! Answer: ${target.en} 다시 들어볼까요?`;
         feedback.className = 'feedback-banner show bad';
       }
       if (onAnswer) onAnswer(correct);
@@ -126,7 +126,7 @@ const Activities = (() => {
           renderRound();
         } else {
           container.innerHTML = '';
-          container.appendChild(el('div', { class: 'feedback-banner show good' }, `🎉 ${score} / ${order.length} 완료!`));
+          container.appendChild(el('div', { class: 'feedback-banner show good' }, `🎉 ${score} / ${order.length} done! 완료!`));
           if (onComplete) onComplete(score, order.length);
         }
       }, 1200);
@@ -159,12 +159,12 @@ const Activities = (() => {
           if (opt.correct) {
             btn.classList.add('correct');
             score++;
-            feedback.textContent = '✅ 맞았어요! Correct!';
+            feedback.textContent = '✅ Correct! 맞았어요!';
             feedback.className = 'feedback-banner show good';
           } else {
             btn.classList.add('wrong');
             [...grid.children].find((b, i) => q.options[i].correct)?.classList.add('correct');
-            feedback.textContent = '❌ 다시 확인해볼까요!';
+            feedback.textContent = '❌ Try again! 다시 확인해봐요!';
             feedback.className = 'feedback-banner show bad';
           }
           if (onAnswer) onAnswer(!!opt.correct);
@@ -175,7 +175,7 @@ const Activities = (() => {
               if (index < questions.length) renderQuestion();
               else if (onComplete) onComplete(score, questions.length);
             },
-          }, index < questions.length - 1 ? '다음 문제 ➜' : '결과 보기 🎉');
+          }, index < questions.length - 1 ? 'Next ➜ 다음' : 'See Results 🎉 결과보기');
           nextWrap.appendChild(nextBtn);
         });
         grid.appendChild(btn);
@@ -244,14 +244,14 @@ const Activities = (() => {
       });
       tileEls.forEach(t => bank.appendChild(t));
 
-      const resetBtn = el('button', { class: 'btn ghost small', type: 'button', onclick: () => renderItem() }, '↺ 다시하기');
+      const resetBtn = el('button', { class: 'btn ghost small', type: 'button', onclick: () => renderItem() }, '↺ Reset 다시하기');
       const checkBtn = el('button', {
         class: 'btn small', type: 'button',
         onclick: () => {
           const built = placed.map(p => p.word).join(' ');
           const answer = item.words.join(' ');
           if (built === answer) {
-            feedback.textContent = '✅ 완벽해요! Perfect sentence!';
+            feedback.textContent = '✅ Perfect sentence! 완벽해요!';
             feedback.className = 'feedback-banner show good';
             EnglishVoice.speak(answer);
             if (onItemComplete) onItemComplete(index);
@@ -262,14 +262,14 @@ const Activities = (() => {
                 if (index < items.length) renderItem();
                 else if (onComplete) onComplete();
               },
-            }, index < items.length - 1 ? '다음 ➜' : '다음 활동으로 🎉');
+            }, index < items.length - 1 ? 'Next ➜ 다음' : 'Next Activity 🎉 다음 활동');
             controls.appendChild(nextBtn);
           } else {
-            feedback.textContent = '❌ 순서를 다시 확인해봐요!';
+            feedback.textContent = '❌ Check the word order! 순서를 확인해봐요!';
             feedback.className = 'feedback-banner show bad';
           }
         },
-      }, '확인 Check');
+      }, 'Check ✓ 확인');
 
       controls.appendChild(checkBtn);
       controls.appendChild(resetBtn);
@@ -288,7 +288,7 @@ const Activities = (() => {
     container.innerHTML = '';
     const grid = el('div', { class: 'mystery-grid' });
     let doneCount = 0;
-    const status = el('p', { class: 'muted center' }, `0 / ${items.length} 완료`);
+    const status = el('p', { class: 'muted center' }, `0 / ${items.length} done 완료`);
 
     items.forEach((item, idx) => {
       const box = el('div', { class: 'mystery-box' }, '❓');
@@ -300,13 +300,13 @@ const Activities = (() => {
         box.appendChild(el('div', { class: 'mystery-sentence' }, item.sentenceKr));
         const sayBtn = el('button', { class: 'btn secondary small', type: 'button' }, '🔊 Listen');
         sayBtn.addEventListener('click', (e) => { e.stopPropagation(); EnglishVoice.speak(item.sentenceEn); });
-        const doneBtn = el('button', { class: 'btn success small', type: 'button' }, '✔ 말했어요!');
+        const doneBtn = el('button', { class: 'btn success small', type: 'button' }, '✔ Done! 말했어요');
         doneBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           if (!box.classList.contains('done')) {
             box.classList.add('done');
             doneCount++;
-            status.textContent = `${doneCount} / ${items.length} 완료`;
+            status.textContent = `${doneCount} / ${items.length} done 완료`;
             if (onBoxDone) onBoxDone(idx);
             if (doneCount === items.length && onAllDone) onAllDone();
           }
@@ -347,7 +347,7 @@ const Activities = (() => {
     const nextBtn = el('button', {
       class: 'btn', type: 'button',
       onclick: () => { index = (index + 1) % order.length; renderCard(); if (onNext) onNext(index); },
-    }, '다음 질문 New Question ➜');
+    }, 'New Question ➜ 다음 질문');
 
     controls.appendChild(nextBtn);
     container.appendChild(counter);
