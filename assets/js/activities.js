@@ -68,7 +68,7 @@ const Activities = (() => {
   }
 
   /* ---------------- Listen & Click game ---------------- */
-  function renderListenAndClick(container, items, { rounds = 6, onComplete } = {}) {
+  function renderListenAndClick(container, items, { rounds = 6, onComplete, onAnswer } = {}) {
     let score = 0;
     let roundIndex = 0;
     const order = shuffle(items).slice(0, Math.min(rounds, items.length));
@@ -119,6 +119,7 @@ const Activities = (() => {
         feedback.textContent = `❌ 다시 들어볼까요? Answer: ${target.en}`;
         feedback.className = 'feedback-banner show bad';
       }
+      if (onAnswer) onAnswer(correct);
       setTimeout(() => {
         roundIndex++;
         if (roundIndex < order.length) {
@@ -135,7 +136,7 @@ const Activities = (() => {
   }
 
   /* ---------------- Multiple choice quiz ---------------- */
-  function renderMultipleChoiceQuiz(container, questions, { onComplete } = {}) {
+  function renderMultipleChoiceQuiz(container, questions, { onComplete, onAnswer } = {}) {
     let index = 0;
     let score = 0;
 
@@ -166,6 +167,7 @@ const Activities = (() => {
             feedback.textContent = '❌ 다시 확인해볼까요!';
             feedback.className = 'feedback-banner show bad';
           }
+          if (onAnswer) onAnswer(!!opt.correct);
           const nextBtn = el('button', {
             class: 'btn', type: 'button',
             onclick: () => {
@@ -187,8 +189,33 @@ const Activities = (() => {
     renderQuestion();
   }
 
+  /* ---------------- Question <-> Answer pairing (explicit Q&A scaffolding) ---------------- */
+  function renderQAPairs(container, pairs) {
+    container.innerHTML = '';
+    pairs.forEach(pair => {
+      const row = el('div', { class: 'qa-pair' }, [
+        el('div', { class: 'qa-block question' }, [
+          el('span', { class: 'qa-tag' }, 'Q 질문'),
+          el('div', {}, [
+            el('div', { class: 'qa-en' }, [pair.qEn, ' ', speakBtn(pair.qEn)]),
+            el('div', { class: 'qa-kr' }, pair.qKr),
+          ]),
+        ]),
+        el('div', { class: 'qa-arrow' }, '➜'),
+        el('div', { class: 'qa-block answer' }, [
+          el('span', { class: 'qa-tag' }, 'A 대답'),
+          el('div', {}, [
+            el('div', { class: 'qa-en' }, [pair.aEn, ' ', speakBtn(pair.aEn)]),
+            el('div', { class: 'qa-kr' }, pair.aKr),
+          ]),
+        ]),
+      ]);
+      container.appendChild(row);
+    });
+  }
+
   /* ---------------- Sentence builder (click word tiles in order) ---------------- */
-  function renderSentenceBuilderSet(container, items, { onComplete } = {}) {
+  function renderSentenceBuilderSet(container, items, { onComplete, onItemComplete } = {}) {
     let index = 0;
 
     function renderItem() {
@@ -227,6 +254,7 @@ const Activities = (() => {
             feedback.textContent = '✅ 완벽해요! Perfect sentence!';
             feedback.className = 'feedback-banner show good';
             EnglishVoice.speak(answer);
+            if (onItemComplete) onItemComplete(index);
             const nextBtn = el('button', {
               class: 'btn success', type: 'button',
               onclick: () => {
@@ -256,7 +284,7 @@ const Activities = (() => {
   }
 
   /* ---------------- Mystery box speaking activity ---------------- */
-  function renderMysteryBoxes(container, items, { onAllDone } = {}) {
+  function renderMysteryBoxes(container, items, { onAllDone, onBoxDone } = {}) {
     container.innerHTML = '';
     const grid = el('div', { class: 'mystery-grid' });
     let doneCount = 0;
@@ -279,6 +307,7 @@ const Activities = (() => {
             box.classList.add('done');
             doneCount++;
             status.textContent = `${doneCount} / ${items.length} 완료`;
+            if (onBoxDone) onBoxDone(idx);
             if (doneCount === items.length && onAllDone) onAllDone();
           }
         });
@@ -294,7 +323,7 @@ const Activities = (() => {
   }
 
   /* ---------------- Speaking prompt deck (interview style) ---------------- */
-  function renderPromptDeck(container, items, {} = {}) {
+  function renderPromptDeck(container, items, { onNext } = {}) {
     const order = shuffle(items);
     let index = 0;
     container.innerHTML = '';
@@ -310,13 +339,14 @@ const Activities = (() => {
         el('div', { class: 'prompt-en' }, item.en),
         el('div', { class: 'prompt-kr' }, item.kr),
         el('div', { style: 'margin-top:14px;' }, speakBtn(item.en)),
+        item.hintEn ? el('div', { class: 'answer-hint' }, `👉 ${item.hintEn} (${item.hintKr})`) : null,
       ]);
       cardWrap.appendChild(card);
     }
 
     const nextBtn = el('button', {
       class: 'btn', type: 'button',
-      onclick: () => { index = (index + 1) % order.length; renderCard(); },
+      onclick: () => { index = (index + 1) % order.length; renderCard(); if (onNext) onNext(index); },
     }, '다음 질문 New Question ➜');
 
     controls.appendChild(nextBtn);
@@ -331,6 +361,7 @@ const Activities = (() => {
     renderFlashcards,
     renderListenAndClick,
     renderMultipleChoiceQuiz,
+    renderQAPairs,
     renderSentenceBuilderSet,
     renderMysteryBoxes,
     renderPromptDeck,

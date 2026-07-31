@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Unit 1: My Family &amp; My Feelings | Interactive English Sessions</title>
-<meta name="description" content="초등 저학년을 위한 인터랙티브 영어 수업 — 가족과 감정 표현" />
+<meta name="description" content="초급 학생을 위한 인터랙티브 영어 수업 — 가족과 감정 표현 (20-25분)" />
 <link rel="stylesheet" href="../../assets/css/main.css" />
 <style>
   .example-row {
@@ -21,26 +21,28 @@
   .example-row .en { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; }
   .example-row .kr { color: var(--color-ink-soft); font-weight: 600; margin-top: 2px; }
   .pattern-box {
-    background: linear-gradient(135deg, #fff0e3, #ffe6cf);
+    background: #fff7ea;
+    border: 2px solid var(--color-accent);
     border-radius: var(--radius-md);
-    padding: 20px 24px;
-    margin-bottom: 24px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
     text-align: center;
   }
-  .pattern-box .pattern-en { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; color: var(--color-primary-dark); }
+  .pattern-box .pattern-en { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--color-primary-dark); }
   .pattern-box .pattern-kr { color: var(--color-ink-soft); font-weight: 700; margin-top: 6px; }
   .checkin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px; }
   .checkin-btn {
-    background: #fff; border: 3px solid var(--color-border); border-radius: var(--radius-md);
+    background: #fff; border: 2px solid var(--color-border); border-radius: var(--radius-md);
     padding: 18px 10px; text-align: center; font-size: 2.4rem; box-shadow: var(--shadow-soft);
     transition: transform 0.15s ease, border-color 0.15s ease;
   }
   .checkin-btn:hover { transform: translateY(-3px); border-color: var(--color-accent-dark); }
   .checkin-btn.picked { border-color: var(--color-primary); background: #fff0e3; }
   .checkin-btn .label { display:block; font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; margin-top: 6px; }
-  .welcome-hero { text-align: center; padding: 40px 10px 10px; }
+  .welcome-hero { text-align: center; padding: 30px 10px 10px; }
   .welcome-hero .emoji-row { font-size: 3rem; margin-bottom: 10px; }
   section.block { margin-bottom: 36px; }
+  .phase-label { font-weight: 800; font-family: var(--font-display); color: var(--color-purple); margin: 18px 0 8px; }
 </style>
 </head>
 <body>
@@ -48,7 +50,8 @@
 <header class="lesson-header">
   <a href="../../index.html" class="icon-btn" title="홈으로">🏠</a>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-  <div class="step-label" id="stepLabel">1 / 14</div>
+  <span class="points-chip" id="pointsChip">⭐ <span class="pt-num" id="pointsNum">0</span> pt</span>
+  <div class="step-label" id="stepLabel">1 / 13</div>
 </header>
 
 <main class="lesson-main">
@@ -58,19 +61,22 @@
     <div class="welcome-hero">
       <div class="emoji-row">👨‍👩‍👧‍👦 ➜ 😊😢😠😴</div>
       <h1>Unit 1: My Family &amp; My Feelings</h1>
-      <p class="kr muted">우리 가족과 기분을 영어로 말해봐요!</p>
+      <p class="kr muted">우리 가족과 기분을 영어로 말해봐요! (약 20-25분)</p>
+      <div class="name-field">
+        <input type="text" id="studentNameInput" class="kr" placeholder="이름을 알려줘! What's your name?" maxlength="20" />
+      </div>
       <div class="spacer"></div>
       <button class="btn" id="startBtn" type="button">시작하기 Let's Start! 🚀</button>
     </div>
     <div class="card" style="margin-top:20px;">
       <h3>오늘 배울 내용 · What we'll learn today</h3>
-      <p class="kr">👨‍👩‍👧‍👦 가족 단어 · 😊 감정 단어 · 🗣️ "This is my ___." / "I am ___." 문장 만들기 · 🎤 말하기 활동</p>
+      <p class="kr">👨‍👩‍👧‍👦 가족 단어 · 😊 감정 단어 · 🗣️ 질문하고 대답하는 법 · 🎤 말하기 활동 · ⭐ 포인트 모으기</p>
     </div>
   </section>
 
   <!-- 1. Warm-up check-in -->
   <section id="screen-checkin" class="screen">
-    <span class="screen-kicker">WARM-UP · 워밍업</span>
+    <span class="screen-kicker">WARM-UP · 워밍업</span><span class="time-badge">⏱ 2분</span>
     <h2>How are you today?</h2>
     <p class="instruction kr">오늘 기분이 어떤가요? 이모지를 눌러보세요! 그리고 큰 소리로 "I am ___." 라고 말해보세요.</p>
     <div class="checkin-grid" id="checkinGrid"></div>
@@ -78,7 +84,7 @@
 
   <!-- 2. Vocabulary: Family -->
   <section id="screen-vocab-family" class="screen">
-    <span class="screen-kicker">VOCABULARY · 어휘</span>
+    <span class="screen-kicker">VOCABULARY · 어휘</span><span class="time-badge">⏱ 3분</span>
     <h2>My Family 우리 가족</h2>
     <p class="instruction kr">카드를 눌러서 단어를 듣고, 한 번 더 눌러서 예문을 확인해보세요. 🔊 버튼을 누르면 발음을 다시 들을 수 있어요.</p>
     <div id="familyFlashcards"></div>
@@ -86,15 +92,15 @@
 
   <!-- 3. Game: family listen & click -->
   <section id="screen-game-family" class="screen">
-    <span class="screen-kicker">GAME · 게임</span>
+    <span class="screen-kicker">GAME · 게임</span><span class="time-badge">⏱ 2분</span>
     <h2>Listen &amp; Click! 듣고 클릭하기</h2>
-    <p class="instruction kr">단어를 듣고 맞는 그림을 클릭하세요!</p>
+    <p class="instruction kr">단어를 듣고 맞는 그림을 클릭하세요! 정답을 맞히면 포인트를 받아요.</p>
     <div id="familyGame"></div>
   </section>
 
   <!-- 4. Grammar: This is my ___ -->
   <section id="screen-grammar-family" class="screen">
-    <span class="screen-kicker">GRAMMAR · 문법</span>
+    <span class="screen-kicker">GRAMMAR · 문법</span><span class="time-badge">⏱ 2분</span>
     <h2>This is my family!</h2>
     <p class="instruction kr">가족을 소개할 때는 "This is my ___." 라고 말해요. 오빠/형/남동생, 언니/누나/여동생을 소개할 땐 He is / She is 를 써요.</p>
     <div class="pattern-box">
@@ -111,7 +117,7 @@
 
   <!-- 5. Practice: sentence builder family -->
   <section id="screen-practice-family" class="screen">
-    <span class="screen-kicker">PRACTICE · 연습</span>
+    <span class="screen-kicker">PRACTICE · 연습</span><span class="time-badge">⏱ 2분</span>
     <h2>Build the Sentence! 문장 만들기</h2>
     <p class="instruction kr">단어 카드를 순서대로 눌러서 올바른 문장을 만들어보세요.</p>
     <div id="sentenceBuilderFamily"></div>
@@ -119,15 +125,15 @@
 
   <!-- 6. Vocabulary: Feelings -->
   <section id="screen-vocab-feelings" class="screen">
-    <span class="screen-kicker">VOCABULARY · 어휘</span>
+    <span class="screen-kicker">VOCABULARY · 어휘</span><span class="time-badge">⏱ 3분</span>
     <h2>My Feelings 나의 기분</h2>
     <p class="instruction kr">카드를 눌러서 감정 단어를 듣고, 표정을 따라해보세요!</p>
     <div id="feelingsFlashcards"></div>
   </section>
 
-  <!-- 7. Grammar: I am / He is / She is + feeling -->
+  <!-- 7. Grammar: I am / He is / She is + feeling, + Q&A -->
   <section id="screen-grammar-feelings" class="screen">
-    <span class="screen-kicker">GRAMMAR · 문법</span>
+    <span class="screen-kicker">GRAMMAR · 문법</span><span class="time-badge">⏱ 3분</span>
     <h2>How do you feel?</h2>
     <p class="instruction kr">내 기분을 말할 땐 "I am ___.", 다른 사람의 기분을 말할 땐 "He is ___." 또는 "She is ___." 를 써요.</p>
     <div class="pattern-box">
@@ -135,30 +141,23 @@
       <div class="pattern-kr">나는/그는/그녀는 ___해요</div>
     </div>
     <div id="feelingsExamples"></div>
-    <div class="pattern-box" style="margin-top:26px;">
-      <div class="pattern-en">How do you feel? — How does he/she feel?</div>
-      <div class="pattern-kr">기분이 어때요? — 그는/그녀는 기분이 어때요?</div>
-    </div>
+
+    <p class="phase-label kr">🔑 질문은 이렇게, 대답은 이렇게! (Q → A)</p>
+    <p class="instruction kr">질문할 때 쓰는 단어(How do you / does he / does she)와, 대답할 때 쓰는 단어(I am / He is / She is)가 서로 달라요. 짝을 맞춰서 기억해보세요!</p>
+    <div id="feelingsQAPairs"></div>
   </section>
 
-  <!-- 8. Practice: sentence builder feelings + quiz -->
+  <!-- 8. Practice: feelings (sentence builder -> Q&A quiz, two phases) -->
   <section id="screen-practice-feelings" class="screen">
-    <span class="screen-kicker">PRACTICE · 연습</span>
-    <h2>Build the Sentence! 문장 만들기</h2>
-    <p class="instruction kr">이번엔 감정 문장을 만들어봐요!</p>
-    <div id="sentenceBuilderFeelings"></div>
-  </section>
-
-  <section id="screen-practice-feelings-quiz" class="screen">
-    <span class="screen-kicker">PRACTICE · 연습</span>
-    <h2>Choose the Right Sentence! 알맞은 문장 고르기</h2>
-    <p class="instruction kr">그림을 보고 알맞은 문장을 골라보세요. (I / He / She 잘 구분해봐요!)</p>
-    <div id="feelingsQuiz"></div>
+    <span class="screen-kicker">PRACTICE · 연습</span><span class="time-badge">⏱ 3분</span>
+    <h2 id="practiceFeelingsTitle">Build the Sentence! 문장 만들기</h2>
+    <p class="instruction kr" id="practiceFeelingsInstruction">이번엔 감정 문장을 만들어봐요!</p>
+    <div id="practiceFeelingsBody"></div>
   </section>
 
   <!-- 9. Speaking: mystery box -->
   <section id="screen-speak-mystery" class="screen">
-    <span class="screen-kicker">SPEAKING · 말하기 활동</span>
+    <span class="screen-kicker">SPEAKING · 말하기 활동</span><span class="time-badge">⏱ 4분</span>
     <h2>Mystery Family Box! 🎁</h2>
     <p class="instruction kr">상자를 눌러서 가족과 기분을 확인하고, 완전한 문장으로 크게 말해보세요! (예: "This is my mom. She is happy.") 다 말했으면 ✔ 버튼을 눌러요.</p>
     <div id="mysteryBoxes"></div>
@@ -166,17 +165,17 @@
 
   <!-- 10. Speaking: interview -->
   <section id="screen-speak-interview" class="screen">
-    <span class="screen-kicker">SPEAKING · 말하기 활동</span>
+    <span class="screen-kicker">SPEAKING · 말하기 활동</span><span class="time-badge">⏱ 3분</span>
     <h2>Feelings Interview 🎤</h2>
-    <p class="instruction kr">질문 카드를 보고 선생님에게 영어로 대답해보세요! "다음 질문" 버튼을 누르면 새로운 질문이 나와요.</p>
+    <p class="instruction kr">질문 카드를 보고 선생님에게 영어로 대답해보세요! 카드 아래 힌트를 보면 어떻게 대답할지 알 수 있어요. "다음 질문" 버튼을 누르면 새로운 질문이 나와요.</p>
     <div id="interviewDeck"></div>
   </section>
 
   <!-- 11. Final quiz -->
   <section id="screen-quiz-final" class="screen">
-    <span class="screen-kicker">FINAL QUIZ · 마무리 퀴즈</span>
+    <span class="screen-kicker">FINAL QUIZ · 마무리 퀴즈</span><span class="time-badge">⏱ 3분</span>
     <h2>Show What You Know! ⭐</h2>
-    <p class="instruction kr">오늘 배운 내용을 확인해봐요!</p>
+    <p class="instruction kr">오늘 배운 내용을 확인해봐요! 정답마다 포인트를 받아요.</p>
     <div id="finalQuiz"></div>
   </section>
 
@@ -184,15 +183,18 @@
   <section id="screen-finish" class="screen">
     <div class="score-hero card">
       <span class="big-emoji">🏆</span>
-      <h2>Great Job, English Star!</h2>
+      <h2 id="finishHeading">Great Job, English Star!</h2>
       <p class="kr muted">오늘 정말 잘했어요!</p>
       <div class="score-num" id="finalScoreText">-</div>
       <div class="stars" id="finalStars">⭐⭐⭐⭐⭐</div>
+      <div class="compare-line" id="compareLine"></div>
       <p class="kr">이제 가족과 기분을 영어로 말할 수 있어요! <br/><strong>This is my family. I am happy!</strong></p>
       <div class="row" style="justify-content:center; margin-top:16px;">
         <button class="btn ghost" id="replayBtn" type="button">↺ 다시 하기</button>
         <a class="btn" href="../../index.html">🏠 홈으로</a>
       </div>
+      <h3 style="margin-top:28px;">🏅 이 기기의 랭킹 Leaderboard</h3>
+      <div id="leaderboardWrap"></div>
     </div>
   </section>
 
@@ -206,6 +208,7 @@
 
 <script src="../../assets/js/speech.js"></script>
 <script src="../../assets/js/confetti.js"></script>
+<script src="../../assets/js/scoreboard.js"></script>
 <script src="../../assets/js/activities.js"></script>
 <script src="../../assets/js/lesson-engine.js"></script>
 <script src="lesson.js"></script>
