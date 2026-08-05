@@ -231,7 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (id === 'screen-practice-family') {
       renderOnce(id, () => {
         Activities.renderSentenceBuilderSet(document.getElementById('sentenceBuilderFamily'), sentenceBuilderFamily, {
-          onItemComplete: () => points.add(15),
+          onWordCorrect: () => points.add(2),
+          onItemComplete: (i, perfect) => { points.add(perfect ? 15 : 8); if (perfect) fireConfetti(600); },
         });
       });
     }
@@ -253,7 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         Activities.renderSentenceBuilderSet(body, sentenceBuilderFeelings, {
-          onItemComplete: () => points.add(15),
+          onWordCorrect: () => points.add(2),
+          onItemComplete: (i, perfect) => { points.add(perfect ? 15 : 8); if (perfect) fireConfetti(600); },
           onComplete: startPhaseB,
         });
       });

@@ -480,7 +480,42 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 }
 .word-tile:hover { transform: translateY(-2px); }
 .word-tile.placed { background: var(--color-secondary); color: #fff; }
-.word-tile.used { opacity: 0.3; pointer-events: none; }
+.word-tile.used { opacity: 0; transform: scale(0.5); pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; }
+.word-tile.wrong-shake { background: #fdecec; animation: shake 0.4s ease; }
+.word-tile.hint-pulse { animation: hintPulse 0.9s ease; box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.65); }
+
+@keyframes hintPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.14); }
+}
+
+.sentence-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  min-height: 56px;
+  margin-bottom: 18px;
+}
+.slot {
+  min-width: 56px;
+  padding: 10px 14px;
+  border-bottom: 3px solid var(--color-border);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.15rem;
+  text-align: center;
+  color: var(--color-ink);
+  transition: border-color 0.2s ease;
+}
+.slot.filled { border-bottom-color: var(--color-green); animation: pop 0.3s ease; }
+
+.streak-badge {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  font-size: 0.9rem;
+}
 
 /* ---------- mystery box speaking activity ---------- */
 

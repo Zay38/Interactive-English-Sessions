@@ -214,67 +214,103 @@ const Activities = (() => {
     });
   }
 
-  /* ---------------- Sentence builder (click word tiles in order) ---------------- */
-  function renderSentenceBuilderSet(container, items, { onComplete, onItemComplete } = {}) {
+  /* ---------------- Sentence builder (arcade-style: instant per-word feedback,
+     numbered slots, streaks, hints) ---------------- */
+  function renderSentenceBuilderSet(container, items, { onComplete, onItemComplete, onWordCorrect } = {}) {
     let index = 0;
+    let streak = 0;
 
     function renderItem() {
       container.innerHTML = '';
       const item = items[index];
-      container.appendChild(el('div', { class: 'step-label' }, `Sentence ${index + 1} / ${items.length}`));
+      let nextIdx = 0;
+      let mistakeMade = false;
+
+      const header = el('div', { class: 'row between' }, [
+        el('div', { class: 'step-label' }, `Sentence ${index + 1} / ${items.length}`),
+        el('div', { class: 'streak-badge' }, streak > 1 ? `🔥 ${streak} in a row! ${streak}연속!` : ''),
+      ]);
+      container.appendChild(header);
       container.appendChild(el('div', { class: 'center', style: 'font-size:3.2rem;margin:6px 0;' }, item.emoji));
       if (item.kr) container.appendChild(el('p', { class: 'muted kr center' }, item.kr));
 
-      const target = el('div', { class: 'sentence-target' });
+      const slots = el('div', { class: 'sentence-slots' });
+      item.words.forEach((_, i) => slots.appendChild(el('div', { class: 'slot' }, '')));
+
       const bank = el('div', { class: 'sentence-bank' });
       const feedback = el('div', { class: 'feedback-banner' });
-      const controls = el('div', { class: 'row', style: 'margin-top:16px;' });
+      const controls = el('div', { class: 'center', style: 'margin-top:14px;' });
 
-      const placed = [];
-      const tileEls = shuffle(item.words.map((w, i) => ({ word: w, id: i }))).map(({ word, id }) => {
+      const tiles = shuffle(item.words.map((w, i) => ({ word: w, id: i }))).map(({ word, id }) => {
         const tile = el('button', { class: 'word-tile', type: 'button' }, word);
-        tile.addEventListener('click', () => {
-          if (tile.classList.contains('used')) return;
-          tile.classList.add('used');
-          placed.push({ word, id, tile });
-          target.appendChild(el('span', { class: 'word-tile placed' }, word));
-        });
         tile.dataset.id = id;
+        tile.addEventListener('click', () => handleTileClick(tile, word));
         return tile;
       });
-      tileEls.forEach(t => bank.appendChild(t));
+      tiles.forEach(t => bank.appendChild(t));
 
-      const resetBtn = el('button', { class: 'btn ghost small', type: 'button', onclick: () => renderItem() }, '↺ Reset 다시하기');
-      const checkBtn = el('button', {
-        class: 'btn small', type: 'button',
+      const hintBtn = el('button', {
+        class: 'btn ghost small', type: 'button',
         onclick: () => {
-          const built = placed.map(p => p.word).join(' ');
-          const answer = item.words.join(' ');
-          if (built === answer) {
-            feedback.textContent = '✅ Perfect sentence! 완벽해요!';
-            feedback.className = 'feedback-banner show good';
-            EnglishVoice.speak(answer);
-            if (onItemComplete) onItemComplete(index);
-            const nextBtn = el('button', {
-              class: 'btn success', type: 'button',
-              onclick: () => {
-                index++;
-                if (index < items.length) renderItem();
-                else if (onComplete) onComplete();
-              },
-            }, index < items.length - 1 ? 'Next ➜ 다음' : 'Next Activity 🎉 다음 활동');
-            controls.appendChild(nextBtn);
-          } else {
-            feedback.textContent = '❌ Check the word order! 순서를 확인해봐요!';
-            feedback.className = 'feedback-banner show bad';
+          if (nextIdx >= item.words.length) return;
+          const target = tiles.find(t => !t.classList.contains('used') && t.textContent === item.words[nextIdx]);
+          if (target) {
+            target.classList.add('hint-pulse');
+            setTimeout(() => target.classList.remove('hint-pulse'), 900);
           }
+          mistakeMade = true;
         },
-      }, 'Check ✓ 확인');
+      }, '💡 Hint 힌트');
+      controls.appendChild(hintBtn);
 
-      controls.appendChild(checkBtn);
-      controls.appendChild(resetBtn);
+      function handleTileClick(tile, word) {
+        if (tile.classList.contains('used') || nextIdx >= item.words.length) return;
+        const expected = item.words[nextIdx];
+        if (word === expected) {
+          tile.classList.add('used');
+          const slotEl = slots.children[nextIdx];
+          slotEl.textContent = word;
+          slotEl.classList.add('filled');
+          if (onWordCorrect) onWordCorrect();
+          setTimeout(() => tile.remove(), 220);
+          nextIdx++;
+          if (nextIdx === item.words.length) finishSentence();
+        } else {
+          tile.classList.remove('wrong-shake');
+          void tile.offsetWidth;
+          tile.classList.add('wrong-shake');
+          setTimeout(() => tile.classList.remove('wrong-shake'), 420);
+          mistakeMade = true;
+        }
+      }
 
-      container.appendChild(target);
+      function finishSentence() {
+        const answer = item.words.join(' ');
+        EnglishVoice.speak(answer);
+        const perfect = !mistakeMade;
+        if (perfect) {
+          streak++;
+          feedback.textContent = `🌟 Perfect! 완벽해요! ${streak > 1 ? `🔥 ${streak} in a row!` : ''}`;
+        } else {
+          streak = 0;
+          feedback.textContent = '✅ Nice job! 잘했어요!';
+        }
+        feedback.className = 'feedback-banner show good';
+        if (onItemComplete) onItemComplete(index, perfect);
+
+        const nextBtn = el('button', {
+          class: 'btn success', type: 'button',
+          onclick: () => {
+            index++;
+            if (index < items.length) renderItem();
+            else if (onComplete) onComplete();
+          },
+        }, index < items.length - 1 ? 'Next ➜ 다음' : 'Next Activity 🎉 다음 활동');
+        controls.innerHTML = '';
+        controls.appendChild(nextBtn);
+      }
+
+      container.appendChild(slots);
       container.appendChild(bank);
       container.appendChild(feedback);
       container.appendChild(controls);
