@@ -250,6 +250,12 @@ document.addEventListener('DOMContentLoaded', () => {
           instrKr.textContent = '질문을 보고 알맞은 대답을 골라봐요!';
           Activities.renderMultipleChoiceQuiz(body, qaMatchQuestions, {
             onAnswer: (correct) => { if (correct) points.add(10); },
+            onComplete: (score, total) => {
+              fireConfetti(700);
+              body.innerHTML = '';
+              body.appendChild(Activities.el('div', { class: 'feedback-banner show good' },
+                `🎉 ${score} / ${total} — All done! Tap "Next ➜" below to continue. 다 했어요! 아래 "Next"를 눌러 계속해요.`));
+            },
           });
         }
 
