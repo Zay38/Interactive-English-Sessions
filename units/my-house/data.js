@@ -6,8 +6,8 @@
    ============================================================ */
 
 const houseVocab = [
-  { emoji: '🍳', en: 'kitchen', kr: '부엌', exampleEn: 'This is the kitchen.', exampleKr: '이곳은 부엌이에요.' },
-  { emoji: '🛌', en: 'bedroom', kr: '침실', exampleEn: 'This is the bedroom.', exampleKr: '이곳은 침실이에요.' },
+  { icon: 'stove', emoji: '🍳', en: 'kitchen', kr: '부엌', exampleEn: 'This is the kitchen.', exampleKr: '이곳은 부엌이에요.' },
+  { icon: 'bunk-bed', emoji: '🛌', en: 'bedroom', kr: '침실', exampleEn: 'This is the bedroom.', exampleKr: '이곳은 침실이에요.' },
   { emoji: '🚿', en: 'bathroom', kr: '욕실', exampleEn: 'This is the bathroom.', exampleKr: '이곳은 욕실이에요.' },
   { emoji: '🛋️', en: 'living room', kr: '거실', exampleEn: 'This is the living room.', exampleKr: '이곳은 거실이에요.' },
   { emoji: '🚪', en: 'door', kr: '문', exampleEn: 'Open the door!', exampleKr: '문을 열어보세요!' },
@@ -31,11 +31,11 @@ window.UNIT_CONFIG = {
     instrEn: 'Tap a card, then say the greeting out loud!',
     instrKr: '카드를 누르고 큰 소리로 따라 말해봐요.',
     options: [
-      { emoji: '👋', en: 'Hello!', kr: '안녕하세요!' },
+      { emoji: '😊', en: 'Hello!', kr: '안녕하세요!' },
       { emoji: '🙋', en: 'Hi!', kr: '안녕!' },
       { emoji: '🌅', en: 'Good morning!', kr: '좋은 아침!' },
       { emoji: '🙏', en: 'Thank you!', kr: '고마워요!' },
-      { emoji: '🚶', en: 'Bye!', kr: '안녕! (헤어질 때)' },
+      { emoji: '👋', en: 'Bye!', kr: '안녕! (헤어질 때)' },
     ],
   },
 
@@ -104,7 +104,7 @@ window.UNIT_CONFIG = {
         },
         {
           key: 'room', labelEn: 'Pick a room', labelKr: '방을 골라요',
-          options: houseVocab.slice(0, 4).map(r => ({ emoji: r.emoji, en: r.en, kr: r.kr })),
+          options: houseVocab.slice(0, 4).map(r => ({ icon: r.icon, emoji: r.emoji, en: r.en, kr: r.kr })),
         },
       ],
       template: (name, picks) => ({

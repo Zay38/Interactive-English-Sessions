@@ -91,7 +91,7 @@ const UnitBuilder = (() => {
     let awarded = false;
     config.checkin.options.forEach(opt => {
       const btn = el('button', { class: 'checkin-btn', type: 'button' }, [
-        opt.emoji,
+        Activities.iconNode(opt),
         el('span', { class: 'label-en' }, opt.en),
         el('span', { class: 'label kr' }, opt.kr),
       ]);
@@ -406,7 +406,7 @@ const UnitBuilder = (() => {
           sec.groups.forEach(g => {
             const grid = document.getElementById(`${sec.id}-${g.key}`);
             g.options.forEach(opt => {
-              const chip = el('button', { class: 'intro-chip', type: 'button' }, [opt.emoji, el('span', { class: 'chip-label' }, opt.en)]);
+              const chip = el('button', { class: 'intro-chip', type: 'button' }, [Activities.iconNode(opt), el('span', { class: 'chip-label' }, opt.en)]);
               chip.addEventListener('click', () => {
                 [...grid.children].forEach(c => c.classList.remove('picked'));
                 chip.classList.add('picked');

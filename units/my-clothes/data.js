@@ -13,7 +13,7 @@ const clothesVocab = [
   { emoji: '👗', en: 'dress', kr: '원피스', exampleEn: 'I am wearing a dress.', exampleKr: '나는 원피스를 입고 있어요.' },
   { emoji: '🧦', en: 'socks', kr: '양말', exampleEn: 'I am wearing socks.', exampleKr: '나는 양말을 신고 있어요.' },
   { emoji: '🧥', en: 'jacket', kr: '재킷', exampleEn: 'I am wearing a jacket.', exampleKr: '나는 재킷을 입고 있어요.' },
-  { emoji: '🕶️', en: 'glasses', kr: '안경', exampleEn: 'I am wearing glasses.', exampleKr: '나는 안경을 쓰고 있어요.' },
+  { emoji: '👓', en: 'glasses', kr: '안경', exampleEn: 'I am wearing glasses.', exampleKr: '나는 안경을 쓰고 있어요.' },
 ];
 
 window.UNIT_CONFIG = {
@@ -31,11 +31,11 @@ window.UNIT_CONFIG = {
     instrEn: 'Tap a card, then say the greeting out loud!',
     instrKr: '카드를 누르고 큰 소리로 따라 말해봐요.',
     options: [
-      { emoji: '👋', en: 'Hello!', kr: '안녕하세요!' },
+      { emoji: '😊', en: 'Hello!', kr: '안녕하세요!' },
       { emoji: '🙋', en: 'Hi!', kr: '안녕!' },
       { emoji: '🌅', en: 'Good morning!', kr: '좋은 아침!' },
       { emoji: '🙏', en: 'Thank you!', kr: '고마워요!' },
-      { emoji: '🚶', en: 'Bye!', kr: '안녕! (헤어질 때)' },
+      { emoji: '👋', en: 'Bye!', kr: '안녕! (헤어질 때)' },
     ],
   },
 
