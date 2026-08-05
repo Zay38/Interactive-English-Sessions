@@ -314,6 +314,55 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   margin-top: 4px;
 }
 
+/* ---------- shared per-unit chrome (welcome hero, patterns, check-in, examples) ---------- */
+
+.example-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin-bottom: 12px;
+}
+.example-row .example-text { flex: 1; }
+.example-row .en { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; }
+.example-row .kr { color: var(--color-ink-soft); font-weight: 600; margin-top: 2px; }
+
+.pattern-box {
+  background: #fff7ea;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.pattern-box .pattern-en { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--color-primary-dark); }
+.pattern-box .pattern-kr { color: var(--color-ink-soft); font-weight: 700; margin-top: 6px; font-size: 0.9rem; }
+
+.checkin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px; }
+.checkin-btn {
+  background: #fff; border: 2px solid var(--color-border); border-radius: var(--radius-md);
+  padding: 18px 10px; text-align: center; font-size: 2.4rem; box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.checkin-btn:hover { transform: translateY(-3px); border-color: var(--color-accent-dark); }
+.checkin-btn.picked { border-color: var(--color-primary); background: #fff0e3; }
+.checkin-btn .label-en { display: block; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-top: 6px; }
+.checkin-btn .label { display: block; font-weight: 600; font-size: 0.78rem; color: var(--color-ink-soft); margin-top: 2px; }
+
+.welcome-hero { position: relative; overflow: hidden; text-align: center; padding: 30px 10px 10px; border-radius: var(--radius-lg); }
+.welcome-hero .emoji-row { font-size: 3rem; margin-bottom: 10px; }
+
+.subtitle-en { display: block; font-weight: 700; color: var(--color-ink); }
+.subtitle-kr { display: block; color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 2px; }
+.learn-list-en { font-weight: 700; }
+.learn-list-kr { color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 4px; }
+
+.phase-label { font-weight: 800; font-family: var(--font-display); color: var(--color-purple); margin: 18px 0 8px; }
+.phase-label .kr { display: block; font-weight: 600; font-size: 0.8rem; color: var(--color-ink-soft); margin-top: 2px; }
+
 .lesson-nav {
   position: fixed;
   left: 0; right: 0; bottom: 0;
