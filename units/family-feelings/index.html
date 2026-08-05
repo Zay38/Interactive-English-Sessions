@@ -40,7 +40,7 @@
   .checkin-btn.picked { border-color: var(--color-primary); background: #fff0e3; }
   .checkin-btn .label-en { display:block; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-top: 6px; }
   .checkin-btn .label { display:block; font-weight: 600; font-size: 0.78rem; color: var(--color-ink-soft); margin-top: 2px; }
-  .welcome-hero { text-align: center; padding: 30px 10px 10px; }
+  .welcome-hero { position: relative; overflow: hidden; text-align: center; padding: 30px 10px 10px; border-radius: var(--radius-lg); }
   .welcome-hero .emoji-row { font-size: 3rem; margin-bottom: 10px; }
   .subtitle-en { display: block; font-weight: 700; color: var(--color-ink); }
   .subtitle-kr { display: block; color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 2px; }
@@ -65,20 +65,32 @@
   <!-- 0. Welcome -->
   <section id="screen-welcome" class="screen active">
     <div class="welcome-hero">
-      <div class="emoji-row">👨‍👩‍👧‍👦 ➜ 😊😢😠😴</div>
-      <h1>Unit 1: My Family &amp; My Feelings</h1>
-      <p>
-        <span class="subtitle-en">Let's talk about family &amp; feelings in English! (~20-25 min)</span>
-        <span class="subtitle-kr kr">우리 가족과 기분을 영어로 말해봐요!</span>
-      </p>
-      <div class="name-field-wrap">
-        <label for="studentNameInput">What's your name?<span class="kr">이름이 뭐예요?</span></label>
-        <div class="name-field">
-          <input type="text" id="studentNameInput" placeholder="e.g. Minjun" maxlength="20" />
-        </div>
+      <div class="bubble-field">
+        <span class="bubble" style="left:6%;width:26px;height:26px;animation-delay:0s;"></span>
+        <span class="bubble" style="left:18%;width:16px;height:16px;animation-delay:1.2s;"></span>
+        <span class="bubble" style="left:30%;width:34px;height:34px;animation-delay:2.4s;"></span>
+        <span class="bubble" style="left:45%;width:20px;height:20px;animation-delay:0.6s;"></span>
+        <span class="bubble" style="left:58%;width:28px;height:28px;animation-delay:3.2s;"></span>
+        <span class="bubble" style="left:70%;width:18px;height:18px;animation-delay:1.8s;"></span>
+        <span class="bubble" style="left:82%;width:24px;height:24px;animation-delay:2.9s;"></span>
+        <span class="bubble" style="left:92%;width:14px;height:14px;animation-delay:0.3s;"></span>
       </div>
-      <div class="spacer"></div>
-      <button class="btn" id="startBtn" type="button">Let's Start! 🚀 <span class="kr" style="font-size:0.8em;font-weight:600;">시작하기</span></button>
+      <div class="hero-content">
+        <div class="emoji-row">👨‍👩‍👧‍👦 ➜ 😊😢😠😴</div>
+        <h1>Unit 1: My Family &amp; My Feelings</h1>
+        <p>
+          <span class="subtitle-en">Let's talk about family &amp; feelings in English! (~20-25 min)</span>
+          <span class="subtitle-kr kr">우리 가족과 기분을 영어로 말해봐요!</span>
+        </p>
+        <div class="name-field-wrap">
+          <label for="studentNameInput">What's your name?<span class="kr">이름이 뭐예요?</span></label>
+          <div class="name-field">
+            <input type="text" id="studentNameInput" placeholder="e.g. Minjun" maxlength="20" />
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" id="startBtn" type="button">Let's Start! 🚀 <span class="kr" style="font-size:0.8em;font-weight:600;">시작하기</span></button>
+      </div>
     </div>
     <div class="card" style="margin-top:20px;">
       <h3>What we'll learn today <span class="kr">· 오늘 배울 내용</span></h3>
@@ -231,19 +243,30 @@
   <!-- 12. Finish -->
   <section id="screen-finish" class="screen">
     <div class="score-hero card">
-      <span class="big-emoji">🏆</span>
-      <h2 id="finishHeading">Great Job, English Star!</h2>
-      <p><span class="subtitle-en">Awesome work today!</span><span class="subtitle-kr kr">오늘 정말 잘했어요!</span></p>
-      <div class="score-num" id="finalScoreText">-</div>
-      <div class="stars" id="finalStars">⭐⭐⭐⭐⭐</div>
-      <div class="compare-line" id="compareLine"></div>
-      <p><strong>You can talk about family &amp; feelings now!</strong><br/>"This is my family. I am happy!"<br/><span class="kr" style="font-size:0.85rem;">이제 가족과 기분을 영어로 말할 수 있어요!</span></p>
-      <div class="row" style="justify-content:center; margin-top:16px;">
-        <button class="btn ghost" id="replayBtn" type="button">↺ Replay <span class="kr" style="font-size:0.8em;">다시 하기</span></button>
-        <a class="btn" href="../../index.html">🏠 Home <span class="kr" style="font-size:0.8em;">홈으로</span></a>
+      <div class="bubble-field">
+        <span class="bubble" style="left:8%;width:22px;height:22px;animation-delay:0.4s;"></span>
+        <span class="bubble" style="left:22%;width:14px;height:14px;animation-delay:1.6s;"></span>
+        <span class="bubble" style="left:36%;width:30px;height:30px;animation-delay:2.8s;"></span>
+        <span class="bubble" style="left:52%;width:18px;height:18px;animation-delay:0.9s;"></span>
+        <span class="bubble" style="left:66%;width:26px;height:26px;animation-delay:2.1s;"></span>
+        <span class="bubble" style="left:80%;width:16px;height:16px;animation-delay:3.4s;"></span>
+        <span class="bubble" style="left:90%;width:22px;height:22px;animation-delay:1.1s;"></span>
       </div>
-      <h3 style="margin-top:28px;">🏅 Leaderboard <span class="kr" style="font-size:0.8rem;">이 기기의 랭킹</span></h3>
-      <div id="leaderboardWrap"></div>
+      <div class="hero-content">
+        <span class="big-emoji">🏆</span>
+        <h2 id="finishHeading">Great Job, English Star!</h2>
+        <p><span class="subtitle-en">Awesome work today!</span><span class="subtitle-kr kr">오늘 정말 잘했어요!</span></p>
+        <div class="score-num" id="finalScoreText">-</div>
+        <div class="stars" id="finalStars">⭐⭐⭐⭐⭐</div>
+        <div class="compare-line" id="compareLine"></div>
+        <p><strong>You can talk about family &amp; feelings now!</strong><br/>"This is my family. I am happy!"<br/><span class="kr" style="font-size:0.85rem;">이제 가족과 기분을 영어로 말할 수 있어요!</span></p>
+        <div class="row" style="justify-content:center; margin-top:16px;">
+          <button class="btn ghost" id="replayBtn" type="button">↺ Replay <span class="kr" style="font-size:0.8em;">다시 하기</span></button>
+          <a class="btn" href="../../index.html">🏠 Home <span class="kr" style="font-size:0.8em;">홈으로</span></a>
+        </div>
+        <h3 style="margin-top:28px;">🏅 Leaderboard <span class="kr" style="font-size:0.8rem;">이 기기의 랭킹</span></h3>
+        <div id="leaderboardWrap"></div>
+      </div>
     </div>
   </section>
 
@@ -257,6 +280,7 @@
 
 <script src="../../assets/js/speech.js"></script>
 <script src="../../assets/js/confetti.js"></script>
+<script src="../../assets/js/sparkle.js"></script>
 <script src="../../assets/js/scoreboard.js"></script>
 <script src="../../assets/js/activities.js"></script>
 <script src="../../assets/js/lesson-engine.js"></script>

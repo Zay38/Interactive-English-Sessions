@@ -114,6 +114,7 @@ const Activities = (() => {
         score++;
         feedback.textContent = '✅ Great job! 정답이에요!';
         feedback.className = 'feedback-banner show good';
+        if (typeof sparkleAt === 'function') sparkleAt(btn);
       } else {
         [...grid.children].find(b => b.textContent.includes(target.en))?.classList.add('correct');
         feedback.textContent = `❌ Not quite! Answer: ${target.en} 다시 들어볼까요?`;
@@ -161,6 +162,7 @@ const Activities = (() => {
             score++;
             feedback.textContent = '✅ Correct! 맞았어요!';
             feedback.className = 'feedback-banner show good';
+            if (typeof sparkleAt === 'function') sparkleAt(btn);
           } else {
             btn.classList.add('wrong');
             [...grid.children].find((b, i) => q.options[i].correct)?.classList.add('correct');
@@ -271,6 +273,7 @@ const Activities = (() => {
           const slotEl = slots.children[nextIdx];
           slotEl.textContent = word;
           slotEl.classList.add('filled');
+          if (typeof sparkleAt === 'function') sparkleAt(slotEl, 7);
           if (onWordCorrect) onWordCorrect();
           setTimeout(() => tile.remove(), 220);
           nextIdx++;
@@ -343,6 +346,7 @@ const Activities = (() => {
             box.classList.add('done');
             doneCount++;
             status.textContent = `${doneCount} / ${items.length} done 완료`;
+            if (typeof sparkleAt === 'function') sparkleAt(box);
             if (onBoxDone) onBoxDone(idx);
             if (doneCount === items.length && onAllDone) onAllDone();
           }

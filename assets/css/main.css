@@ -590,8 +590,10 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 /* ---------- score / results ---------- */
 
 .score-hero {
+  position: relative;
   text-align: center;
   padding: 40px 20px;
+  overflow: hidden;
 }
 .score-hero .big-emoji { font-size: 4.5rem; display: block; margin-bottom: 10px; }
 .score-hero .score-num {
@@ -778,6 +780,119 @@ footer.site-footer {
   border-radius: var(--radius-sm);
   padding: 12px 16px;
   margin: 16px 0;
+}
+
+/* ---------- sparkle burst (JS-triggered, assets/js/sparkle.js) ---------- */
+
+.sparkle-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.85);
+  animation: sparkleFly 0.7s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes sparkleFly {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity: 0; }
+}
+
+/* ---------- ambient floating bubbles (decorative, welcome/finish only) ---------- */
+
+.bubble-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+}
+.bubble-field .bubble {
+  position: absolute;
+  bottom: -60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(79, 195, 247, 0.2));
+  opacity: 0;
+  animation: floatUp 10s ease-in infinite;
+}
+.hero-content { position: relative; z-index: 1; }
+
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  8% { opacity: 0.55; }
+  90% { opacity: 0.35; }
+  100% { transform: translateY(-540px) scale(1.25); opacity: 0; }
+}
+
+/* ---------- My Introduction capstone card ---------- */
+
+.intro-picker-group { margin-bottom: 22px; }
+.intro-picker-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.intro-picker-label .kr { display: block; font-weight: 600; font-size: 0.8rem; color: var(--color-ink-soft); margin-top: 2px; }
+.intro-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+  gap: 10px;
+}
+.intro-chip {
+  background: #fff;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 1.6rem;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.intro-chip:hover { transform: translateY(-2px); }
+.intro-chip.picked { border-color: var(--color-primary); background: #fff0e3; transform: translateY(-2px) scale(1.04); }
+.intro-chip .chip-label { display: block; font-family: var(--font-display); font-weight: 700; font-size: 0.72rem; margin-top: 4px; }
+
+.intro-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, #fff 0%, #fff7ea 60%, #ffeee0 100%);
+  border: 3px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  padding: 30px 26px;
+  text-align: center;
+  box-shadow: var(--shadow-pop);
+  margin: 22px 0;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.intro-card.complete {
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 34px rgba(242, 98, 59, 0.28);
+}
+.intro-card .intro-card-kicker {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--color-primary-dark);
+  margin-bottom: 10px;
+}
+.intro-card .intro-sentence {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+.intro-card .intro-sentence .blank { color: var(--color-border); }
+.intro-card .intro-sentence-kr {
+  margin-top: 10px;
+  color: var(--color-ink-soft);
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 600px) {
