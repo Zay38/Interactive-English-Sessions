@@ -831,6 +831,20 @@ footer.site-footer {
   margin: 16px 0;
 }
 
+/* ---------- MDI icon badge (fallback for words with no good emoji) ---------- */
+
+.mdi-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-dark);
+  vertical-align: middle;
+}
+.mdi-icon-badge svg { display: block; }
+.choice-btn .mdi-icon-badge,
+.checkin-btn .mdi-icon-badge,
+.intro-chip .mdi-icon-badge { color: var(--color-secondary-dark); }
+
 /* ---------- sparkle burst (JS-triggered, assets/js/sparkle.js) ---------- */
 
 .sparkle-particle {

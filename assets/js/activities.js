@@ -37,6 +37,19 @@ const Activities = (() => {
     }, '🔊');
   }
 
+  /* Most vocab items use a plain emoji character. A few concepts have no
+     good emoji (e.g. "kitchen", "bedroom" — there's no room emoji), so
+     those items carry an `icon: 'mdi-name'` field instead and render as
+     a small inline SVG from icons.js. */
+  function iconNode(item) {
+    if (item.icon && typeof MdiIcons !== 'undefined' && MdiIcons[item.icon]) {
+      const span = el('span', { class: 'mdi-icon-badge' });
+      span.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em">${MdiIcons[item.icon]}</svg>`;
+      return span;
+    }
+    return item.emoji;
+  }
+
   /* ---------------- Flashcards (both languages shown together) ---------------- */
   function renderFlashcards(container, items) {
     container.innerHTML = '';
@@ -45,7 +58,7 @@ const Activities = (() => {
       const card = el('div', { class: 'flashcard' });
       const inner = el('div', { class: 'flashcard-inner' });
       const front = el('div', { class: 'flash-face flash-front' }, [
-        el('div', { class: 'emoji' }, item.emoji),
+        el('div', { class: 'emoji' }, iconNode(item)),
         el('div', { class: 'word-en' }, item.en),
         el('div', { class: 'word-kr' }, item.kr),
         speakBtn(item.en),
@@ -97,7 +110,7 @@ const Activities = (() => {
       const choices = shuffle([target, ...distractors]);
       choices.forEach(choice => {
         const btn = el('button', { class: 'choice-btn', type: 'button' }, [
-          choice.emoji,
+          iconNode(choice),
           el('span', { class: 'choice-label' }, choice.en),
         ]);
         btn.addEventListener('click', () => handleAnswer(choice, target, btn, grid));
@@ -397,7 +410,7 @@ const Activities = (() => {
   }
 
   return {
-    shuffle, el, speakBtn,
+    shuffle, el, speakBtn, iconNode,
     renderFlashcards,
     renderListenAndClick,
     renderMultipleChoiceQuiz,

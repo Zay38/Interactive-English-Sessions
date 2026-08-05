@@ -36,11 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   const checkinOptions = [
-    { emoji: '👋', en: 'Hello!', kr: '안녕하세요!' },
+    { emoji: '😊', en: 'Hello!', kr: '안녕하세요!' },
     { emoji: '🙋', en: 'Hi!', kr: '안녕!' },
     { emoji: '🌅', en: 'Good morning!', kr: '좋은 아침!' },
     { emoji: '🙏', en: 'Thank you!', kr: '고마워요!' },
-    { emoji: '🚶', en: 'Bye!', kr: '안녕! (헤어질 때)' },
+    { emoji: '👋', en: 'Bye!', kr: '안녕! (헤어질 때)' },
   ];
 
   const sentenceBuilderAboutMe = [

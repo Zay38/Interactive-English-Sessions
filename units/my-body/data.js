@@ -30,11 +30,11 @@ window.UNIT_CONFIG = {
     instrEn: 'Tap a card, then say the greeting out loud!',
     instrKr: '카드를 누르고 큰 소리로 따라 말해봐요.',
     options: [
-      { emoji: '👋', en: 'Hello!', kr: '안녕하세요!' },
+      { emoji: '😊', en: 'Hello!', kr: '안녕하세요!' },
       { emoji: '🙋', en: 'Hi!', kr: '안녕!' },
       { emoji: '🌅', en: 'Good morning!', kr: '좋은 아침!' },
       { emoji: '🙏', en: 'Thank you!', kr: '고마워요!' },
-      { emoji: '🚶', en: 'Bye!', kr: '안녕! (헤어질 때)' },
+      { emoji: '👋', en: 'Bye!', kr: '안녕! (헤어질 때)' },
     ],
   },
 
