@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unit 2: Hello, Friend! | Interactive English Sessions</title>
+<meta name="description" content="초급 학생을 위한 인터랙티브 영어 수업 — 인사와 자기소개, 좋아하는 것 말하기 (20-25분)" />
+<link rel="stylesheet" href="../../assets/css/main.css" />
+<style>
+  .example-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin-bottom: 12px;
+  }
+  .example-row .example-text { flex: 1; }
+  .example-row .en { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; }
+  .example-row .kr { color: var(--color-ink-soft); font-weight: 600; margin-top: 2px; }
+  .pattern-box {
+    background: #fff7ea;
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .pattern-box .pattern-en { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--color-primary-dark); }
+  .pattern-box .pattern-kr { color: var(--color-ink-soft); font-weight: 700; margin-top: 6px; font-size: 0.9rem; }
+  .checkin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px; }
+  .checkin-btn {
+    background: #fff; border: 2px solid var(--color-border); border-radius: var(--radius-md);
+    padding: 18px 10px; text-align: center; font-size: 2.4rem; box-shadow: var(--shadow-soft);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .checkin-btn:hover { transform: translateY(-3px); border-color: var(--color-accent-dark); }
+  .checkin-btn.picked { border-color: var(--color-primary); background: #fff0e3; }
+  .checkin-btn .label-en { display:block; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-top: 6px; }
+  .checkin-btn .label { display:block; font-weight: 600; font-size: 0.78rem; color: var(--color-ink-soft); margin-top: 2px; }
+  .welcome-hero { text-align: center; padding: 30px 10px 10px; }
+  .welcome-hero .emoji-row { font-size: 3rem; margin-bottom: 10px; }
+  .subtitle-en { display: block; font-weight: 700; color: var(--color-ink); }
+  .subtitle-kr { display: block; color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 2px; }
+  .learn-list-en { font-weight: 700; }
+  .learn-list-kr { color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 4px; }
+  section.block { margin-bottom: 36px; }
+  .phase-label { font-weight: 800; font-family: var(--font-display); color: var(--color-purple); margin: 18px 0 8px; }
+  .phase-label .kr { display: block; font-weight: 600; font-size: 0.8rem; color: var(--color-ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<header class="lesson-header">
+  <a href="../../index.html" class="icon-btn" title="Home 홈으로">🏠</a>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="points-chip" id="pointsChip">⭐ <span class="pt-num" id="pointsNum">0</span> pt</span>
+  <div class="step-label" id="stepLabel">1 / 13</div>
+</header>
+
+<main class="lesson-main">
+
+  <!-- 0. Welcome -->
+  <section id="screen-welcome" class="screen active">
+    <div class="welcome-hero">
+      <div class="emoji-row">👋 ➜ 🙋 ➜ 🍕🐶📚⚽</div>
+      <h1>Unit 2: Hello, Friend!</h1>
+      <p>
+        <span class="subtitle-en">Let's say hello and talk about what we like! (~20-25 min)</span>
+        <span class="subtitle-kr kr">인사하고 좋아하는 것을 말해봐요!</span>
+      </p>
+      <div class="name-field-wrap">
+        <label for="studentNameInput">What's your name?<span class="kr">이름이 뭐예요?</span></label>
+        <div class="name-field">
+          <input type="text" id="studentNameInput" placeholder="e.g. Minjun" maxlength="20" />
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn" id="startBtn" type="button">Let's Start! 🚀 <span class="kr" style="font-size:0.8em;font-weight:600;">시작하기</span></button>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h3>What we'll learn today <span class="kr">· 오늘 배울 내용</span></h3>
+      <p class="learn-list-en">👋 Greetings · 📛 Names · 🍕 Likes · 🗣️ Ask &amp; Answer · 🎤 Speaking · ⭐ Points</p>
+      <p class="learn-list-kr kr">인사말 · 이름 · 좋아하는 것 · 질문과 대답 · 말하기 활동 · 포인트 모으기</p>
+    </div>
+  </section>
+
+  <!-- 1. Warm-up check-in -->
+  <section id="screen-checkin" class="screen">
+    <span class="screen-kicker">WARM-UP · 워밍업</span><span class="time-badge">⏱ 2min</span>
+    <h2>Say Hello! <span class="kr">인사해봐요!</span></h2>
+    <p class="instruction">
+      <span class="instr-en">Tap a card, then say the greeting out loud!</span>
+      <span class="instr-kr kr">카드를 누르고 큰 소리로 따라 말해봐요.</span>
+    </p>
+    <div class="checkin-grid" id="checkinGrid"></div>
+  </section>
+
+  <!-- 2. Vocabulary: Greetings -->
+  <section id="screen-vocab-greetings" class="screen">
+    <span class="screen-kicker">VOCABULARY · 어휘</span><span class="time-badge">⏱ 3min</span>
+    <h2>Greetings &amp; Friends <span class="kr">인사와 친구</span></h2>
+    <p class="instruction">
+      <span class="instr-en">Tap a card to hear the word. Tap 🔊 to hear it again.</span>
+      <span class="instr-kr kr">카드를 눌러 단어를 들어봐요.</span>
+    </p>
+    <div id="greetingFlashcards"></div>
+  </section>
+
+  <!-- 3. Game: greetings listen & click -->
+  <section id="screen-game-greetings" class="screen">
+    <span class="screen-kicker">GAME · 게임</span><span class="time-badge">⏱ 2min</span>
+    <h2>Listen &amp; Click! <span class="kr">듣고 클릭하기</span></h2>
+    <p class="instruction">
+      <span class="instr-en">Listen, then click the matching picture. Correct = points!</span>
+      <span class="instr-kr kr">듣고 맞는 그림을 클릭해요. 정답마다 포인트!</span>
+    </p>
+    <div id="greetingGame"></div>
+  </section>
+
+  <!-- 4. Grammar: greetings + name Q&A -->
+  <section id="screen-grammar-greetings" class="screen">
+    <span class="screen-kicker">GRAMMAR · 문법</span><span class="time-badge">⏱ 3min</span>
+    <h2>What's your name? <span class="kr">이름이 뭐예요?</span></h2>
+    <p class="instruction">
+      <span class="instr-en">Say "Hello!" or "Hi!" to greet someone, then share your name.</span>
+      <span class="instr-kr kr">"Hello!"나 "Hi!"로 인사하고 이름을 말해요.</span>
+    </p>
+    <div class="pattern-box">
+      <div class="pattern-en">Hello! / Hi! / Nice to meet you!</div>
+      <div class="pattern-kr">안녕하세요! / 안녕! / 만나서 반가워요!</div>
+    </div>
+    <div id="greetingExamples"></div>
+
+    <p class="phase-label">🔑 Question vs. Answer <span class="kr">질문은 이렇게, 대답은 이렇게!</span></p>
+    <p class="instruction">
+      <span class="instr-en">Questions and answers use different words. Match them up!</span>
+      <span class="instr-kr kr">질문 단어와 대답 단어가 서로 달라요. 짝지어 기억해요.</span>
+    </p>
+    <div id="greetingQAPairs"></div>
+  </section>
+
+  <!-- 5. Practice: sentence builder greetings -->
+  <section id="screen-practice-greetings" class="screen">
+    <span class="screen-kicker">PRACTICE · 연습</span><span class="time-badge">⏱ 2min</span>
+    <h2>Build the Sentence! <span class="kr">문장 만들기</span></h2>
+    <p class="instruction">
+      <span class="instr-en">Tap the word tiles in order to build the sentence.</span>
+      <span class="instr-kr kr">단어 카드를 순서대로 눌러요.</span>
+    </p>
+    <div id="sentenceBuilderGreetings"></div>
+  </section>
+
+  <!-- 6. Vocabulary: Likes -->
+  <section id="screen-vocab-likes" class="screen">
+    <span class="screen-kicker">VOCABULARY · 어휘</span><span class="time-badge">⏱ 3min</span>
+    <h2>Things I Like <span class="kr">내가 좋아하는 것</span></h2>
+    <p class="instruction">
+      <span class="instr-en">Tap a card to hear the word. Which ones do you like?</span>
+      <span class="instr-kr kr">카드를 눌러 단어를 들어봐요.</span>
+    </p>
+    <div id="likesFlashcards"></div>
+  </section>
+
+  <!-- 7. Grammar: I like ___ + Q&A -->
+  <section id="screen-grammar-likes" class="screen">
+    <span class="screen-kicker">GRAMMAR · 문법</span><span class="time-badge">⏱ 3min</span>
+    <h2>What do you like? <span class="kr">무엇을 좋아해요?</span></h2>
+    <p class="instruction">
+      <span class="instr-en">Use "I like ___." to talk about things you like.</span>
+      <span class="instr-kr kr">"I like ___."로 좋아하는 것을 말해요.</span>
+    </p>
+    <div class="pattern-box">
+      <div class="pattern-en">I like ___.</div>
+      <div class="pattern-kr">나는 ___를 좋아해요.</div>
+    </div>
+    <div id="likesExamples"></div>
+
+    <p class="phase-label">🔑 Question vs. Answer <span class="kr">질문은 이렇게, 대답은 이렇게!</span></p>
+    <p class="instruction">
+      <span class="instr-en">Different questions need different answers. Listen carefully!</span>
+      <span class="instr-kr kr">질문에 따라 대답이 달라요. 잘 듣고 골라봐요!</span>
+    </p>
+    <div id="likesQAPairs"></div>
+  </section>
+
+  <!-- 8. Practice: likes (sentence builder -> Q&A quiz, two phases) -->
+  <section id="screen-practice-likes" class="screen">
+    <span class="screen-kicker">PRACTICE · 연습</span><span class="time-badge">⏱ 3min</span>
+    <h2 id="practiceLikesTitle">Build the Sentence! <span class="kr">문장 만들기</span></h2>
+    <p class="instruction">
+      <span class="instr-en" id="practiceLikesInstrEn">Let's build "I like ___." sentences!</span>
+      <span class="instr-kr kr" id="practiceLikesInstrKr">"I like ___." 문장을 만들어봐요!</span>
+    </p>
+    <div id="practiceLikesBody"></div>
+  </section>
+
+  <!-- 9. Speaking: mystery box (roleplay) -->
+  <section id="screen-speak-mystery" class="screen">
+    <span class="screen-kicker">SPEAKING · 말하기 활동</span><span class="time-badge">⏱ 4min</span>
+    <h2>Mystery Friend Box! 🎁</h2>
+    <p class="instruction">
+      <span class="instr-en">Tap a box to meet a new friend. Say their sentence out loud like you're them! Tap ✔ when done.</span>
+      <span class="instr-kr kr">상자를 눌러 친구를 만나고, 그 친구가 되어 문장을 크게 말해봐요.</span>
+    </p>
+    <div id="mysteryBoxes"></div>
+  </section>
+
+  <!-- 10. Speaking: interview -->
+  <section id="screen-speak-interview" class="screen">
+    <span class="screen-kicker">SPEAKING · 말하기 활동</span><span class="time-badge">⏱ 3min</span>
+    <h2>Friend Interview 🎤</h2>
+    <p class="instruction">
+      <span class="instr-en">Read the question, then answer your teacher in English. Use the hint below the card!</span>
+      <span class="instr-kr kr">질문을 읽고 영어로 대답해요. 카드 아래 힌트를 참고해요.</span>
+    </p>
+    <div id="interviewDeck"></div>
+  </section>
+
+  <!-- 11. Final quiz -->
+  <section id="screen-quiz-final" class="screen">
+    <span class="screen-kicker">FINAL QUIZ · 마무리 퀴즈</span><span class="time-badge">⏱ 3min</span>
+    <h2>Show What You Know! ⭐</h2>
+    <p class="instruction">
+      <span class="instr-en">Show what you learned! Earn points for each correct answer.</span>
+      <span class="instr-kr kr">오늘 배운 내용을 확인해요. 정답마다 포인트!</span>
+    </p>
+    <div id="finalQuiz"></div>
+  </section>
+
+  <!-- 12. Finish -->
+  <section id="screen-finish" class="screen">
+    <div class="score-hero card">
+      <span class="big-emoji">🏆</span>
+      <h2 id="finishHeading">Great Job, English Star!</h2>
+      <p><span class="subtitle-en">Awesome work today!</span><span class="subtitle-kr kr">오늘 정말 잘했어요!</span></p>
+      <div class="score-num" id="finalScoreText">-</div>
+      <div class="stars" id="finalStars">⭐⭐⭐⭐⭐</div>
+      <div class="compare-line" id="compareLine"></div>
+      <p><strong>You can greet friends and talk about likes now!</strong><br/>"Hi! My name is ___. I like pizza!"<br/><span class="kr" style="font-size:0.85rem;">이제 인사하고 좋아하는 것을 영어로 말할 수 있어요!</span></p>
+      <div class="row" style="justify-content:center; margin-top:16px;">
+        <button class="btn ghost" id="replayBtn" type="button">↺ Replay <span class="kr" style="font-size:0.8em;">다시 하기</span></button>
+        <a class="btn" href="../../index.html">🏠 Home <span class="kr" style="font-size:0.8em;">홈으로</span></a>
+      </div>
+      <h3 style="margin-top:28px;">🏅 Leaderboard <span class="kr" style="font-size:0.8rem;">이 기기의 랭킹</span></h3>
+      <div id="leaderboardWrap"></div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="lesson-nav">
+  <button class="btn ghost small" id="prevBtn" type="button">◀ Back</button>
+  <div class="dot-track" id="dotTrack"></div>
+  <button class="btn small" id="nextBtn" type="button">Next ➜</button>
+</nav>
+
+<script src="../../assets/js/speech.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="../../assets/js/scoreboard.js"></script>
+<script src="../../assets/js/activities.js"></script>
+<script src="../../assets/js/lesson-engine.js"></script>
+<script src="lesson.js"></script>
+</body>
+</html>
