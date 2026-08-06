@@ -215,6 +215,25 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 .tag.vocab { background: #eafbf1; color: #2e9e63; }
 .tag.speak { background: #f4edff; color: #7a4de0; }
 
+.unit-card-wrap { position: relative; }
+.jp-mini-link {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+.jp-mini-link:hover { transform: scale(1.12) rotate(-6deg); }
+
 .unit-card.locked { opacity: 0.55; cursor: default; }
 .unit-card.locked:hover { transform: none; border-color: transparent; box-shadow: var(--shadow-soft); }
 .coming-soon-badge {
@@ -962,4 +981,109 @@ footer.site-footer {
   .lesson-main { padding-bottom: 160px; }
   .dot-track { max-width: 100%; order: 3; width: 100%; }
   .lesson-nav { flex-wrap: wrap; }
+}
+
+/* ---------- Jeopardy review game ---------- */
+
+.jp-header-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.25;
+}
+.jp-header-title #boardTitleKr { font-weight: 600; font-size: 0.8rem; }
+
+.jp-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--jp-cols, 4), 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+.jp-cat {
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 10px 6px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+.jp-cat-en { font-family: var(--font-display); font-weight: 800; font-size: 0.92rem; }
+.jp-cat-kr { font-size: 0.72rem; opacity: 0.9; margin-top: 2px; }
+
+.jp-cell {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-secondary-dark));
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  box-shadow: var(--shadow-pop);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.jp-cell:hover:not(:disabled) { transform: translateY(-3px) scale(1.03); filter: brightness(1.06); }
+.jp-cell:active:not(:disabled) { transform: translateY(0) scale(0.96); }
+.jp-cell.used {
+  background: #f0e6d6;
+  color: var(--color-ink-soft);
+  box-shadow: none;
+  font-size: 1.6rem;
+}
+.jp-cell.empty { visibility: hidden; }
+
+.jp-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(45, 42, 61, 0.6);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.jp-overlay.show { display: flex; }
+.jp-modal {
+  position: relative;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  animation: fadeUp 0.3s ease;
+}
+.jp-modal .row { justify-content: center; }
+.jp-close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+}
+.jp-emoji { font-size: 3.2rem; margin-bottom: 6px; }
+.jp-clue-en {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  line-height: 1.4;
+}
+.jp-clue-kr { margin-top: 8px; color: var(--color-ink-soft); font-size: 0.9rem; }
+
+.jp-answer-wrap {
+  display: none;
+  margin-top: 20px;
+  padding: 16px;
+  background: #eafbf1;
+  border-radius: var(--radius-md);
+}
+.jp-answer-wrap.show { display: block; animation: fadeUp 0.3s ease; }
+.jp-answer-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: #2e9e63;
+  margin-bottom: 6px;
+}
+.jp-answer-en { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--color-ink); }
+.jp-answer-kr { margin-top: 4px; color: var(--color-ink-soft); font-size: 0.85rem; }
+
+@media (max-width: 600px) {
+  .jp-cat-en { font-size: 0.78rem; }
+  .jp-cat-kr { display: none; }
+  .jp-cell { font-size: 1.1rem; }
 }

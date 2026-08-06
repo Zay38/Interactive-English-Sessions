@@ -18,6 +18,7 @@ const weatherVocab = [
 
 window.UNIT_CONFIG = {
   unitId: 'weather',
+  previousUnit: { id: 'my-clothes', nameEn: 'Unit 7: My Clothes' },
   headingEn: 'Unit 8: Weather',
   emojiRow: '☀️🌧️☁️ ➜ ❄️💨 ➜ 📺',
   subtitleEn: "Learn weather words and build YOUR OWN weather report! (~20-25 min)",

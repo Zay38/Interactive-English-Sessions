@@ -18,6 +18,7 @@ const houseVocab = [
 
 window.UNIT_CONFIG = {
   unitId: 'my-house',
+  previousUnit: { id: 'weather', nameEn: 'Unit 8: Weather' },
   headingEn: 'Unit 9: My House',
   emojiRow: '🏠 ➜ 🍳🛌🚿🛋️ ➜ ✨',
   subtitleEn: 'Explore the rooms of a house and build YOUR dream house! (~20-25 min)',

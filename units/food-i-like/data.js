@@ -18,6 +18,7 @@ const foodVocab = [
 
 window.UNIT_CONFIG = {
   unitId: 'food-i-like',
+  previousUnit: { id: 'animals', nameEn: 'Unit 4: Animals' },
   headingEn: 'Unit 5: Food I Like',
   emojiRow: '🍎 ➜ 🍞🥛🍪 ➜ 🍽️',
   subtitleEn: 'Learn yummy food words and build YOUR OWN lunch menu! (~20-25 min)',

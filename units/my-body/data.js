@@ -17,6 +17,7 @@ const bodyVocab = [
 
 window.UNIT_CONFIG = {
   unitId: 'my-body',
+  previousUnit: { id: 'hello-friend', nameEn: 'Unit 2: All About Me!' },
   headingEn: 'Unit 3: My Body',
   emojiRow: '😀 ➜ 👀👃👄 ➜ 👹',
   subtitleEn: "Learn your body parts and build YOUR OWN silly monster! (~20-25 min)",

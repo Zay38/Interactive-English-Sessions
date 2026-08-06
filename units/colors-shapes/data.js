@@ -18,6 +18,7 @@ const colorShapeVocab = [
 
 window.UNIT_CONFIG = {
   unitId: 'colors-shapes',
+  previousUnit: { id: 'food-i-like', nameEn: 'Unit 5: Food I Like' },
   headingEn: 'Unit 6: Colors & Shapes',
   emojiRow: '🔴🔵🟢 ➜ ⭕◼️🔺 ➜ 🎨',
   subtitleEn: 'Learn colors and shapes and build YOUR favorite thing! (~20-25 min)',
