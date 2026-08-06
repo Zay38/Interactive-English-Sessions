@@ -70,6 +70,13 @@ const UnitBuilder = (() => {
       el('p', { class: 'learn-list-en' }, config.learnListEn),
       el('p', { class: 'learn-list-kr kr' }, config.learnListKr),
     ]));
+    if (config.previousUnit) {
+      section.appendChild(el('div', { class: 'center', style: 'margin-top:16px;' },
+        el('a', { class: 'btn ghost small', href: `../${config.previousUnit.id}/jeopardy.html` }, [
+          `📚 Review Last Time: ${config.previousUnit.nameEn} `,
+          el('span', { class: 'kr', style: 'font-size:0.8em;' }, '지난 시간 복습하기'),
+        ])));
+    }
     return section;
   }
 
@@ -136,6 +143,7 @@ const UnitBuilder = (() => {
           ]),
       el('div', { class: 'row', style: 'justify-content:center; margin-top:16px;' }, [
         el('button', { class: 'btn ghost', id: 'replayBtn', type: 'button' }, ['↺ Replay ', el('span', { class: 'kr', style: 'font-size:0.8em;' }, '다시 하기')]),
+        el('a', { class: 'btn secondary', href: 'jeopardy.html' }, ['🎯 Review Game ', el('span', { class: 'kr', style: 'font-size:0.8em;' }, '복습 게임')]),
         el('a', { class: 'btn', href: '../../index.html' }, ['🏠 Home ', el('span', { class: 'kr', style: 'font-size:0.8em;' }, '홈으로')]),
       ]),
       el('h3', { style: 'margin-top:28px;' }, ['🏅 Leaderboard ', el('span', { class: 'kr', style: 'font-size:0.8rem;' }, '이 기기의 랭킹')]),

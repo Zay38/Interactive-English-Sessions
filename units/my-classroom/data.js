@@ -18,6 +18,7 @@ const classroomVocab = [
 
 window.UNIT_CONFIG = {
   unitId: 'my-classroom',
+  previousUnit: { id: 'my-house', nameEn: 'Unit 9: My House' },
   headingEn: 'Unit 10: In My Classroom',
   emojiRow: '🎒 ➜ ✏️📖📏 ➜ 🖍️',
   subtitleEn: "Learn classroom words and build YOUR OWN pencil case! (~20-25 min)",

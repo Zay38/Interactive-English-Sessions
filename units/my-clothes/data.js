@@ -18,6 +18,7 @@ const clothesVocab = [
 
 window.UNIT_CONFIG = {
   unitId: 'my-clothes',
+  previousUnit: { id: 'colors-shapes', nameEn: 'Unit 6: Colors & Shapes' },
   headingEn: 'Unit 7: My Clothes',
   emojiRow: '👕👖👟 ➜ 🧢👗🧥 ➜ 👗',
   subtitleEn: "Learn clothing words and build YOUR OWN outfit! (~20-25 min)",

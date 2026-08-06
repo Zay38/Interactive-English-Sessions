@@ -18,6 +18,7 @@ const animalVocab = [
 
 window.UNIT_CONFIG = {
   unitId: 'animals',
+  previousUnit: { id: 'my-body', nameEn: 'Unit 3: My Body' },
   headingEn: 'Unit 4: Animals',
   emojiRow: '🐶 ➜ 🦁🐘🐵 ➜ 🐾',
   subtitleEn: 'Explore the animal safari and build YOUR OWN pet card! (~20-25 min)',

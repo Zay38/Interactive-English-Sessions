@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Review Game | Interactive English Sessions</title>
+<meta name="description" content="유닛 복습 제퍼디 게임" />
+<link rel="stylesheet" href="../../assets/css/main.css" />
+</head>
+<body>
+
+<header class="lesson-header">
+  <a href="../../index.html" class="icon-btn" title="Home 홈으로">🏠</a>
+  <div class="jp-header-title">
+    <div id="boardTitleEn">Review Game</div>
+    <div id="boardTitleKr" class="kr"></div>
+  </div>
+  <span class="points-chip" id="pointsChip">⭐ <span class="pt-num" id="pointsNum">0</span> pt</span>
+</header>
+
+<main class="lesson-main">
+  <p class="instruction center">
+    <span class="instr-en">🎯 Pick a category and point value. Answer out loud, then tap "Show Answer"!</span><br>
+    <span class="instr-kr kr">칸을 골라 질문에 큰 소리로 답하고, "정답 보기"를 눌러 확인해요!</span>
+  </p>
+  <div class="jp-grid" id="jeopardyGrid"></div>
+  <div class="center" style="margin-top:24px;">
+    <a class="btn ghost small" href="index.html" id="backToUnitLink">◀ Back to Unit <span class="kr" style="font-size:0.8em;">유닛으로</span></a>
+  </div>
+</main>
+
+<div class="jp-overlay" id="jeopardyOverlay">
+  <div class="jp-modal card">
+    <button class="icon-btn jp-close" id="closeClueBtn" type="button" title="Close">✕</button>
+    <div class="jp-emoji" id="clueEmoji">❓</div>
+    <div class="jp-clue-en" id="clueEn"></div>
+    <div class="jp-clue-kr kr" id="clueKr"></div>
+    <button class="btn secondary small" id="speakClueBtn" type="button">🔊 Hear It 들어보기</button>
+
+    <div class="jp-answer-wrap" id="answerWrap">
+      <div class="jp-answer-label">✅ ANSWER <span class="kr">정답</span></div>
+      <div class="jp-answer-en" id="answerEn"></div>
+      <div class="jp-answer-kr kr" id="answerKr"></div>
+    </div>
+
+    <div class="row center" style="margin-top:20px;">
+      <button class="btn" id="showAnswerBtn" type="button">Show Answer <span class="kr" style="font-size:0.8em;">정답 보기</span></button>
+    </div>
+    <div class="row center" id="judgeButtons" style="display:none; margin-top:16px;">
+      <button class="btn success" id="correctBtn" type="button">✅ Correct!</button>
+      <button class="btn ghost" id="skipBtn" type="button">➡️ Skip <span class="kr" style="font-size:0.8em;">넘어가기</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="jp-overlay" id="jeopardyFinish">
+  <div class="jp-modal card center">
+    <span class="big-emoji">🏆</span>
+    <h2>Board Complete! <span class="kr" style="font-size:0.7em;">보드 완료!</span></h2>
+    <div class="score-num" id="jpFinalScore">-</div>
+    <div class="compare-line" id="jpCompareLine"></div>
+    <div class="row center" style="justify-content:center; margin-top:16px;">
+      <button class="btn ghost" id="jpReplayBtn" type="button">↺ Play Again <span class="kr" style="font-size:0.8em;">다시 하기</span></button>
+      <a class="btn" href="index.html">◀ Back to Unit <span class="kr" style="font-size:0.8em;">유닛으로</span></a>
+      <a class="btn secondary" href="../../index.html">🏠 Home <span class="kr" style="font-size:0.8em;">홈으로</span></a>
+    </div>
+    <h3 style="margin-top:24px;">🏅 Leaderboard <span class="kr" style="font-size:0.8rem;">이 기기의 랭킹</span></h3>
+    <div id="jpLeaderboardWrap"></div>
+  </div>
+</div>
+
+<script src="../../assets/js/speech.js"></script>
+<script src="../../assets/js/confetti.js"></script>
+<script src="../../assets/js/sparkle.js"></script>
+<script src="../../assets/js/icons.js"></script>
+<script src="../../assets/js/scoreboard.js"></script>
+<script src="../../assets/js/activities.js"></script>
+<script src="../../assets/js/jeopardy-autogen.js"></script>
+<script src="../../assets/js/jeopardy.js"></script>
+<script src="data.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.UNIT_CONFIG) {
+      window.JEOPARDY_CONFIG = buildJeopardyFromUnitConfig(window.UNIT_CONFIG);
+      JeopardyBoard.render(window.JEOPARDY_CONFIG);
+    }
+  });
+</script>
+</body>
+</html>
