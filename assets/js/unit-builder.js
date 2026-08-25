@@ -251,10 +251,10 @@ const UnitBuilder = (() => {
     ]));
 
     section.appendChild(el('p', { class: 'instruction' }, [
-      el('span', { class: 'instr-en' }, sec.confirmInstrEn || '🎤 Now say it out loud to your teacher!'),
-      el('span', { class: 'instr-kr kr' }, sec.confirmInstrKr || '이제 선생님께 큰 소리로 말해봐요!'),
+      el('span', { class: 'instr-en' }, sec.confirmInstrEn || '🎤 Now say it out loud!'),
+      el('span', { class: 'instr-kr kr' }, sec.confirmInstrKr || '이제 큰 소리로 말해봐요!'),
     ]));
-    section.appendChild(el('div', { class: 'center' }, el('button', { class: 'btn success', id: `${sec.id}DoneBtn`, type: 'button', disabled: true }, '✔ I said it! 말했어요!')));
+    section.appendChild(el('div', { class: 'center', id: `${sec.id}DoneWrap` }));
     return section;
   }
 
@@ -400,20 +400,27 @@ const UnitBuilder = (() => {
           const card = document.getElementById(`${sec.id}Card`);
           const sentenceEl = document.getElementById(`${sec.id}Sentence`);
           const sentenceKrEl = document.getElementById(`${sec.id}SentenceKr`);
-          const doneBtn = document.getElementById(`${sec.id}DoneBtn`);
+          const doneWrap = document.getElementById(`${sec.id}DoneWrap`);
 
           function refresh() {
             const complete = sec.groups.every(g => picks[g.key]);
+            doneWrap.innerHTML = '';
             if (complete) {
               const result = sec.template(name, picks);
               sentenceEl.innerHTML = result.html || result.en;
               sentenceKrEl.textContent = result.kr;
+              doneWrap.appendChild(Activities.speakCheckWidget(result.en, {
+                checkLabel: '🎤 Say It! 말하기 확인하기',
+                onPass: () => {
+                  capstoneRecap = { en: result.en, kr: result.kr };
+                  if (!awarded) { awarded = true; points.add(sec.points || 25); fireConfetti(1400); }
+                },
+              }));
             } else {
               sentenceEl.innerHTML = sec.placeholderEn;
               sentenceKrEl.textContent = sec.placeholderKr;
             }
             card.classList.toggle('complete', complete);
-            doneBtn.disabled = !complete;
             if (complete && typeof sparkleAt === 'function') sparkleAt(card, 18);
           }
 
@@ -435,13 +442,6 @@ const UnitBuilder = (() => {
           document.getElementById(`${sec.id}HearBtn`).addEventListener('click', () => {
             if (!sec.groups.every(g => picks[g.key])) return;
             EnglishVoice.speak(sec.template(name, picks).en);
-          });
-
-          doneBtn.addEventListener('click', () => {
-            if (!sec.groups.every(g => picks[g.key])) return;
-            const result = sec.template(name, picks);
-            capstoneRecap = { en: result.en, kr: result.kr };
-            if (!awarded) { awarded = true; points.add(sec.points || 25); fireConfetti(1400); }
           });
 
           refresh();
@@ -496,6 +496,7 @@ const UnitBuilder = (() => {
 
         const stats = Scoreboard.getStats(config.unitId);
         const entry = Scoreboard.addEntry(config.unitId, { name, points: points.total });
+        Scoreboard.markComplete(config.unitId, points.total);
         renderCompareLine(document.getElementById('compareLine'), points.total, stats);
         renderLeaderboard(document.getElementById('leaderboardWrap'), config.unitId, entry.id);
       });

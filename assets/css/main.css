@@ -234,6 +234,37 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 }
 .jp-mini-link:hover { transform: scale(1.12) rotate(-6deg); }
 
+.unit-card.completed { border-color: var(--color-green); }
+.unit-done-badge {
+  position: absolute;
+  top: 14px;
+  right: 60px;
+  z-index: 2;
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #eafbf1;
+  box-shadow: var(--shadow-soft);
+  font-size: 1.05rem;
+  pointer-events: none;
+}
+
+.progress-summary {
+  display: none;
+  margin: 0 0 18px;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  background: #eafbf1;
+  color: #2e9e63;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-align: center;
+}
+.progress-summary.show { display: block; }
+.progress-summary .kr { font-size: 0.85rem; font-weight: 600; color: var(--color-ink-soft); }
+
 .unit-card.locked { opacity: 0.55; cursor: default; }
 .unit-card.locked:hover { transform: none; border-color: transparent; box-shadow: var(--shadow-soft); }
 .coming-soon-badge {
@@ -1087,3 +1118,17 @@ footer.site-footer {
   .jp-cat-kr { display: none; }
   .jp-cell { font-size: 1.1rem; }
 }
+
+/* ---------- speak-check widget (mic-based self-verification) ---------- */
+
+.speak-check { margin-top: 14px; text-align: center; }
+.speak-check-status {
+  margin-top: 10px;
+  min-height: 1.4em;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+.speak-check-pass { color: #2e9e63; font-family: var(--font-display); font-weight: 800; }
+.speak-check-fail { color: #c9762f; }
+.speak-check.passed { animation: fadeUp 0.3s ease; }

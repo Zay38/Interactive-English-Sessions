@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.getElementById('introCard');
         const sentenceEl = document.getElementById('introSentence');
         const sentenceKrEl = document.getElementById('introSentenceKr');
-        const doneBtn = document.getElementById('introDoneBtn');
+        const doneWrap = document.getElementById('introDoneWrap');
 
         function refreshCard() {
           const ageText = selectedAge ? selectedAge.en : '<span class="blank">___</span>';
@@ -274,13 +274,21 @@ document.addEventListener('DOMContentLoaded', () => {
           const likeKr = selectedLike ? selectedLike.kr : '___';
           sentenceKrEl.textContent = `안녕! 내 이름은 ${name}예요. 나는 ${ageKr}살이에요. 나는 ${likeKr}를 좋아해요. 만나서 반가워요!`;
 
+          doneWrap.innerHTML = '';
           if (selectedAge && selectedLike) {
             card.classList.add('complete');
-            doneBtn.disabled = false;
             if (typeof sparkleAt === 'function') sparkleAt(card, 18);
+            const fullEn = `Hi! My name is ${name}. I am ${selectedAge.en} years old. I like ${selectedLike.en}. Nice to meet you!`;
+            const fullKr = `안녕! 내 이름은 ${name}예요. 나는 ${selectedAge.kr}살이에요. 나는 ${selectedLike.kr}를 좋아해요. 만나서 반가워요!`;
+            doneWrap.appendChild(Activities.speakCheckWidget(fullEn, {
+              checkLabel: '🎤 Say It! 말하기 확인하기',
+              onPass: () => {
+                myIntro = { en: fullEn, kr: fullKr };
+                if (!awarded) { awarded = true; points.add(25); fireConfetti(1400); }
+              },
+            }));
           } else {
             card.classList.remove('complete');
-            doneBtn.disabled = true;
           }
         }
 
@@ -317,19 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('hearIntroBtn').addEventListener('click', () => {
           if (!selectedAge || !selectedLike) return;
           EnglishVoice.speak(`Hi! My name is ${name}. I am ${selectedAge.en} years old. I like ${selectedLike.en}. Nice to meet you!`);
-        });
-
-        doneBtn.addEventListener('click', () => {
-          if (!selectedAge || !selectedLike) return;
-          myIntro = {
-            en: `Hi! My name is ${name}. I am ${selectedAge.en} years old. I like ${selectedLike.en}. Nice to meet you!`,
-            kr: `안녕! 내 이름은 ${name}예요. 나는 ${selectedAge.kr}살이에요. 나는 ${selectedLike.kr}를 좋아해요. 만나서 반가워요!`,
-          };
-          if (!awarded) {
-            awarded = true;
-            points.add(25);
-            fireConfetti(1400);
-          }
         });
 
         refreshCard();
@@ -381,6 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const stats = Scoreboard.getStats(UNIT_ID);
         const entry = Scoreboard.addEntry(UNIT_ID, { name, points: points.total });
+        Scoreboard.markComplete(UNIT_ID, points.total);
 
         renderCompareLine(document.getElementById('compareLine'), points.total, stats);
         renderLeaderboard(document.getElementById('leaderboardWrap'), UNIT_ID, entry.id);

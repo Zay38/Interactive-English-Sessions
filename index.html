@@ -46,6 +46,7 @@
       <h2>Beginner</h2>
       <span class="level-sub kr">1-2학년 눈높이</span>
     </div>
+    <p class="progress-summary" id="progressSummary"></p>
     <div class="unit-grid">
       <div class="unit-card-wrap">
       <a class="unit-card" href="units/family-feelings/index.html">
@@ -271,5 +272,33 @@
     <p>Made for interactive Zoom English classes · Korean Elementary Curriculum-aligned 🇰🇷</p>
   </footer>
 </div>
+
+<script src="assets/js/scoreboard.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const progress = Scoreboard.getProgress();
+    let doneCount = 0;
+    document.querySelectorAll('.unit-card-wrap').forEach(wrap => {
+      const link = wrap.querySelector('a.unit-card');
+      const match = link && link.getAttribute('href').match(/units\/([^/]+)\//);
+      if (!match) return;
+      const entry = progress[match[1]];
+      if (!entry) return;
+      doneCount++;
+      link.classList.add('completed');
+      const badge = document.createElement('span');
+      badge.className = 'unit-done-badge';
+      badge.title = `Completed 완료 · best ${entry.bestPoints}pt`;
+      badge.textContent = '✅';
+      wrap.appendChild(badge);
+    });
+    const summary = document.getElementById('progressSummary');
+    if (summary && doneCount) {
+      const total = document.querySelectorAll('.unit-card-wrap').length;
+      summary.innerHTML = `🌟 You've finished <strong>${doneCount} / ${total}</strong> Beginner units!<br><span class="kr">지금까지 ${total}개 중 ${doneCount}개를 완료했어요!</span>`;
+      summary.classList.add('show');
+    }
+  });
+</script>
 </body>
 </html>
