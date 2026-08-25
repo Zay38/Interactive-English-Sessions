@@ -1,0 +1,305 @@
+/* ============================================================
+   Avatar — CSS 3D voxel character + futuristic "holo stage".
+
+   The character is real 3D (preserve-3d), so it rotates with
+   actual perspective. Every color and transform carries a
+   transition, which is what produces the PowerPoint-Morph /
+   Apple-product-page feel: changing an outfit interpolates
+   instead of snapping.
+   ============================================================ */
+
+.avatar-stage {
+  --vox: 7px;
+  --spin: -25deg;
+  position: relative;
+  min-height: 440px;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 92%, rgba(80, 200, 255, 0.28), transparent 70%),
+    linear-gradient(170deg, #1b1f3a 0%, #232a4d 45%, #161a2e 100%);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.avatar-stage.dragging { cursor: grabbing; }
+
+/* horizon grid — reads as a futuristic floor */
+.avatar-stage::before {
+  content: '';
+  position: absolute;
+  left: -25%;
+  right: -25%;
+  bottom: 0;
+  height: 46%;
+  background-image:
+    linear-gradient(rgba(120, 220, 255, 0.30) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 220, 255, 0.30) 1px, transparent 1px);
+  background-size: 44px 44px;
+  transform: perspective(340px) rotateX(70deg);
+  transform-origin: bottom center;
+  mask-image: linear-gradient(to top, #000 5%, transparent 85%);
+  -webkit-mask-image: linear-gradient(to top, #000 5%, transparent 85%);
+  animation: gridDrift 7s linear infinite;
+}
+@keyframes gridDrift {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 0 44px, 0 0; }
+}
+
+/* soft glow behind the character */
+.avatar-stage::after {
+  content: '';
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(120, 220, 255, 0.22), transparent 68%);
+  filter: blur(6px);
+  pointer-events: none;
+  animation: haloPulse 4.5s ease-in-out infinite;
+}
+@keyframes haloPulse {
+  0%, 100% { opacity: 0.65; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.08); }
+}
+
+/* ---------- the rig ---------- */
+
+.avatar-rig {
+  position: relative;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(-8deg) rotateY(var(--spin));
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: avatarBreathe 3.6s ease-in-out infinite;
+  z-index: 1;
+}
+.avatar-stage.dragging .avatar-rig { transition: none; animation-play-state: paused; }
+
+@keyframes avatarBreathe {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -5px; }
+}
+
+.vox {
+  position: absolute;
+  transform-style: preserve-3d;
+  left: 0;
+  top: 0;
+  transform: translate3d(var(--px, 0px), var(--py, 0px), var(--pz, 0px));
+  /* the morph: parts glide between poses instead of snapping */
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+}
+.vox.hidden { opacity: 0; pointer-events: none; }
+
+.vox-face {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* the morph: outfit colors interpolate instead of flipping */
+  transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.5s ease;
+  backface-visibility: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.10);
+}
+
+/* ---------- face details ---------- */
+
+.vox-face.has-face { overflow: hidden; }
+.face-bit {
+  position: absolute;
+  background: #2b2b33;
+  border-radius: 1px;
+  transition: all 0.4s ease;
+}
+.face-bit.eye-l, .face-bit.eye-r {
+  width: 15%;
+  height: 15%;
+  top: 50%;
+  animation: avatarBlink 5.2s infinite;
+}
+.face-bit.eye-l { left: 24%; }
+.face-bit.eye-r { right: 24%; }
+@keyframes avatarBlink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.12); }
+}
+.face-bit.mouth {
+  width: 24%;
+  height: 7%;
+  left: 38%;
+  top: 73%;
+  border-radius: 0 0 4px 4px;
+  background: #7a4a44;
+}
+
+/* ---------- hat shape variants ---------- */
+
+.part-hat.hat-tall { height: calc(var(--vox) * 6); }
+.part-hat.hat-flat { height: calc(var(--vox) * 1.2); width: calc(var(--vox) * 12); }
+
+/* ---------- poses (each is a morph target) ---------- */
+
+/* Each pose rotates a limb about its shoulder/hip (the top edge of the
+   box) rather than its centre, so the joint stays put while the limb
+   swings. */
+.avatar-rig[data-pose] .part-arm,
+.avatar-rig[data-pose] .part-leg { transform-origin: 50% 0%; }
+
+.avatar-rig[data-pose='wave'] .arm-r {
+  transform: translate3d(var(--px), var(--py), var(--pz)) rotate(155deg);
+}
+.avatar-rig[data-pose='wave'] .hand-r { opacity: 0; }
+
+.avatar-rig[data-pose='walk'] .leg-l { transform: translate3d(var(--px), var(--py), var(--pz)) rotateX(28deg); }
+.avatar-rig[data-pose='walk'] .leg-r { transform: translate3d(var(--px), var(--py), var(--pz)) rotateX(-28deg); }
+.avatar-rig[data-pose='walk'] .arm-l { transform: translate3d(var(--px), var(--py), var(--pz)) rotateX(-24deg); }
+.avatar-rig[data-pose='walk'] .arm-r { transform: translate3d(var(--px), var(--py), var(--pz)) rotateX(24deg); }
+.avatar-rig[data-pose='walk'] .part-hand { opacity: 0; }
+
+.avatar-rig[data-pose='cheer'] .arm-l {
+  transform: translate3d(var(--px), var(--py), var(--pz)) rotate(-160deg);
+}
+.avatar-rig[data-pose='cheer'] .arm-r {
+  transform: translate3d(var(--px), var(--py), var(--pz)) rotate(160deg);
+}
+.avatar-rig[data-pose='cheer'] .part-hand { opacity: 0; }
+
+/* ---------- stage chrome ---------- */
+
+.stage-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  text-align: center;
+  color: rgba(210, 240, 255, 0.75);
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.pose-bar {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 2;
+}
+.pose-btn {
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(150, 220, 255, 0.35);
+  color: #d6f0ff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+.pose-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
+.pose-btn.active { background: rgba(120, 220, 255, 0.85); color: #10203a; border-color: transparent; }
+
+/* ---------- customization panel ---------- */
+
+.wardrobe { margin-top: 26px; }
+.wardrobe-group { margin-bottom: 22px; }
+.wardrobe-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.wardrobe-label .kr { font-size: 0.8rem; font-weight: 600; color: var(--color-ink-soft); margin-left: 6px; }
+
+.swatch-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatch {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-sm);
+  border: 3px solid transparent;
+  box-shadow: var(--shadow-soft);
+  background: var(--color-bg-alt);
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-ink-soft);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease;
+  overflow: hidden;
+}
+.swatch:hover:not(.locked) { transform: translateY(-3px) scale(1.05); }
+.swatch.picked { border-color: var(--color-primary); }
+.swatch .swatch-fill { position: absolute; inset: 0; }
+.swatch .swatch-name { position: relative; z-index: 1; }
+
+.swatch.locked { cursor: not-allowed; filter: grayscale(0.85); opacity: 0.55; }
+.swatch.locked::after {
+  content: '🔒';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.unlock-hint {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+  min-height: 1.2em;
+}
+
+.unlock-meter {
+  margin: 0 0 22px;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-alt);
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+.unlock-meter .kr { display: block; font-size: 0.82rem; font-weight: 600; color: var(--color-ink-soft); margin-top: 4px; }
+.unlock-bar {
+  margin-top: 10px;
+  height: 12px;
+  border-radius: 999px;
+  background: #e6ddcd;
+  overflow: hidden;
+}
+.unlock-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- scroll reveal (Apple-style section entrance) ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-rig, .vox, .vox-face, .reveal, .unlock-bar span { transition: none; animation: none; }
+  .avatar-stage::before, .avatar-stage::after { animation: none; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+@media (max-width: 600px) {
+  .avatar-stage { --vox: 5.5px; min-height: 360px; }
+  .swatch { width: 50px; height: 50px; }
+}

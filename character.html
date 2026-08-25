@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Character | Interactive English Sessions</title>
+<meta name="description" content="영어 학습 여정과 함께 성장하는 나만의 캐릭터를 만들어요" />
+<link rel="stylesheet" href="assets/css/main.css" />
+<link rel="stylesheet" href="assets/css/avatar.css" />
+<style>
+  .char-hero { text-align: center; padding: 20px 10px 26px; }
+  .char-hero h1 { margin-bottom: 8px; }
+  .char-layout { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(300px, 1fr); gap: 26px; align-items: start; }
+  @media (max-width: 860px) { .char-layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page-shell">
+
+  <div class="top-bar">
+    <a href="index.html" class="brand"><span class="logo-badge">🗣️</span> Interactive English Sessions</a>
+  </div>
+
+  <section class="char-hero reveal">
+    <h1>My Character <span class="kr" style="font-size:0.55em;">나만의 캐릭터</span></h1>
+    <p class="muted">
+      Build your character, then grow it by finishing English units!<br>
+      <span class="kr">캐릭터를 만들고, 영어 유닛을 완료하며 성장시켜요!</span>
+    </p>
+  </section>
+
+  <div class="char-layout">
+
+    <div class="reveal">
+      <div class="avatar-stage" id="avatarStage">
+        <div class="pose-bar" id="poseBar"></div>
+        <div id="avatarMount"></div>
+        <div class="stage-caption">🖱️ Drag to spin · <span class="kr">드래그해서 돌려보세요</span></div>
+      </div>
+      <div class="center" style="margin-top:16px;">
+        <a class="btn ghost small" href="index.html">◀ Back to Units <span class="kr" style="font-size:0.8em;">유닛으로</span></a>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <p class="unlock-meter" id="unlockMeter"></p>
+      <div class="wardrobe" id="wardrobe"></div>
+      <p class="unlock-hint" id="unlockHint"></p>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <p>Made for interactive Zoom English classes · Korean Elementary Curriculum-aligned 🇰🇷</p>
+  </footer>
+</div>
+
+<script src="assets/js/scoreboard.js"></script>
+<script src="assets/js/sparkle.js"></script>
+<script src="assets/js/confetti.js"></script>
+<script src="assets/js/avatar.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const UNIT_NAMES = {
+      'family-feelings': 'Unit 1: My Family & My Feelings',
+      'hello-friend': 'Unit 2: All About Me!',
+      'my-body': 'Unit 3: My Body',
+      'animals': 'Unit 4: Animals',
+      'food-i-like': 'Unit 5: Food I Like',
+      'colors-shapes': 'Unit 6: Colors & Shapes',
+      'my-clothes': 'Unit 7: My Clothes',
+      'weather': 'Unit 8: Weather',
+      'my-house': 'Unit 9: My House',
+      'my-classroom': 'Unit 10: In My Classroom',
+    };
+
+    const progress = Scoreboard.getProgress();
+    let config = Avatar.load();
+
+    const stage = document.getElementById('avatarStage');
+    const built = Avatar.buildRig(document.getElementById('avatarMount'));
+    Avatar.applyConfig(built, config);
+    Avatar.enableDragRotate(stage, built.rig);
+    Avatar.setPose(built, 'idle');
+
+    /* ---- poses ---- */
+    const POSES = [
+      { id: 'idle', label: '🧍 Stand' },
+      { id: 'wave', label: '👋 Wave' },
+      { id: 'walk', label: '🚶 Walk' },
+      { id: 'cheer', label: '🎉 Cheer' },
+    ];
+    const poseBar = document.getElementById('poseBar');
+    POSES.forEach((p, i) => {
+      const b = document.createElement('button');
+      b.className = 'pose-btn' + (i === 0 ? ' active' : '');
+      b.type = 'button';
+      b.textContent = p.label;
+      b.addEventListener('click', (e) => {
+        e.stopPropagation();
+        poseBar.querySelectorAll('.pose-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        Avatar.setPose(built, p.id);
+      });
+      poseBar.appendChild(b);
+    });
+
+    /* ---- wardrobe ---- */
+    const wardrobe = document.getElementById('wardrobe');
+    const hint = document.getElementById('unlockHint');
+
+    function renderWardrobe() {
+      wardrobe.innerHTML = '';
+      Object.keys(Avatar.CATALOG).forEach(cat => {
+        const group = Avatar.CATALOG[cat];
+        const wrap = document.createElement('div');
+        wrap.className = 'wardrobe-group';
+        wrap.innerHTML = `<div class="wardrobe-label">${group.labelEn}<span class="kr">${group.labelKr}</span></div>`;
+
+        const row = document.createElement('div');
+        row.className = 'swatch-row';
+
+        group.options.forEach(opt => {
+          const unlocked = Avatar.isUnlocked(cat, opt, progress);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'swatch'
+            + (config[cat] === opt.id ? ' picked' : '')
+            + (unlocked ? '' : ' locked');
+          btn.dataset.cat = cat;
+          btn.dataset.id = opt.id;
+
+          if (opt.color) {
+            const fill = document.createElement('span');
+            fill.className = 'swatch-fill';
+            fill.style.background = opt.color;
+            btn.appendChild(fill);
+          } else {
+            const name = document.createElement('span');
+            name.className = 'swatch-name';
+            name.textContent = '—';
+            btn.appendChild(name);
+          }
+          btn.title = `${opt.labelEn} ${opt.labelKr}`;
+
+          btn.addEventListener('click', () => {
+            if (!unlocked) {
+              const unit = Avatar.optionUnlockUnit(cat, opt);
+              hint.innerHTML = `🔒 <strong>${opt.labelEn}</strong> unlocks when you finish <strong>${UNIT_NAMES[unit] || unit}</strong>.<br><span class="kr">${UNIT_NAMES[unit] || unit}을(를) 완료하면 열려요!</span>`;
+              return;
+            }
+            config[cat] = opt.id;
+            Avatar.save(config);
+            Avatar.applyConfig(built, config);
+            row.querySelectorAll('.swatch').forEach(s => s.classList.remove('picked'));
+            btn.classList.add('picked');
+            hint.innerHTML = `✨ <strong>${opt.labelEn}</strong> <span class="kr">${opt.labelKr}</span>`;
+            if (typeof sparkleAt === 'function') sparkleAt(btn, 8);
+          });
+
+          row.appendChild(btn);
+        });
+
+        wrap.appendChild(row);
+        wardrobe.appendChild(wrap);
+      });
+    }
+
+    function renderMeter() {
+      const { total, unlocked } = Avatar.unlockStats(progress);
+      const pct = Math.round((unlocked / total) * 100);
+      const meter = document.getElementById('unlockMeter');
+      meter.innerHTML = `
+        🎁 ${unlocked} / ${total} items unlocked
+        <span class="kr">유닛을 완료할수록 새로운 아이템이 열려요! (${unlocked}/${total})</span>
+        <span class="unlock-bar"><span style="width:0%"></span></span>
+      `;
+      requestAnimationFrame(() => {
+        meter.querySelector('.unlock-bar span').style.width = `${pct}%`;
+      });
+    }
+
+    renderWardrobe();
+    renderMeter();
+
+    /* ---- Apple-style scroll reveal ---- */
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  });
+</script>
+</body>
+</html>
