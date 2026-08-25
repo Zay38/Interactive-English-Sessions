@@ -340,7 +340,15 @@ const Activities = (() => {
      said the target sentence, without a teacher listening live. Falls back
      to a manual self-report button when the browser doesn't support speech
      recognition (Firefox/Safari) or when the mic genuinely isn't working. */
-  function speakCheckWidget(expectedEn, { onPass, checkLabel = '🎤 Check My Speaking! 말하기 확인하기', passLabel = '✔ Done! 말했어요' } = {}) {
+  function speakCheckWidget(expectedEn, {
+    onPass,
+    checkLabel = '🎤 Check My Speaking! 말하기 확인하기',
+    passLabel = '✔ Done! 말했어요',
+    // Escape hatch shown alongside the mic. Deliberately does NOT assume a
+    // teacher is present: from Unit 11 on, students work through these
+    // on their own, so "my teacher heard me" would be the wrong prompt.
+    fallbackLabel = '✔ I said it 말했어요',
+  } = {}) {
     const wrap = el('div', { class: 'speak-check' });
     const statusEl = el('div', { class: 'speak-check-status' });
     const btnRow = el('div', { class: 'row', style: 'justify-content:center;' });
@@ -381,7 +389,7 @@ const Activities = (() => {
       btnRow.appendChild(micBtn);
       wrap.appendChild(btnRow);
       wrap.appendChild(statusEl);
-      const fallback = el('button', { class: 'btn ghost small', type: 'button' }, '✔ My teacher heard me 선생님이 들었어요');
+      const fallback = el('button', { class: 'btn ghost small', type: 'button' }, fallbackLabel);
       fallback.addEventListener('click', (e) => { e.stopPropagation(); markPassed(false); });
       wrap.appendChild(el('div', { class: 'center', style: 'margin-top:6px;' }, fallback));
     } else {
