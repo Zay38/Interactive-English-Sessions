@@ -307,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const stats = Scoreboard.getStats(UNIT_ID);
         const entry = Scoreboard.addEntry(UNIT_ID, { name, points: points.total });
+        Scoreboard.markComplete(UNIT_ID, points.total);
 
         renderCompareLine(document.getElementById('compareLine'), points.total, stats);
         renderLeaderboard(document.getElementById('leaderboardWrap'), UNIT_ID, entry.id);

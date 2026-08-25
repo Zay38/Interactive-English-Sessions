@@ -46,7 +46,33 @@ const Scoreboard = (() => {
     return { count: board.length, average: Math.round(total / board.length) };
   }
 
-  return { getSavedName, saveName, getBoard, addEntry, getStats };
+  const PROGRESS_KEY = 'ies-progress';
+
+  function getProgress() {
+    try {
+      return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function markComplete(unitId, points) {
+    const progress = getProgress();
+    const prev = progress[unitId];
+    progress[unitId] = {
+      completedAt: new Date().toISOString(),
+      bestPoints: Math.max(points || 0, prev ? prev.bestPoints : 0),
+      times: (prev ? prev.times : 0) + 1,
+    };
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+    return progress[unitId];
+  }
+
+  function isComplete(unitId) {
+    return !!getProgress()[unitId];
+  }
+
+  return { getSavedName, saveName, getBoard, addEntry, getStats, getProgress, markComplete, isComplete };
 })();
 
 class PointsTracker {

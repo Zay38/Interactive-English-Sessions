@@ -335,6 +335,66 @@ const Activities = (() => {
     renderItem();
   }
 
+  /* ---------------- Speak-check widget (real voice verification) ----------------
+     Uses SpeechCheck (Web Speech API) so a student can confirm they actually
+     said the target sentence, without a teacher listening live. Falls back
+     to a manual self-report button when the browser doesn't support speech
+     recognition (Firefox/Safari) or when the mic genuinely isn't working. */
+  function speakCheckWidget(expectedEn, { onPass, checkLabel = '🎤 Check My Speaking! 말하기 확인하기', passLabel = '✔ Done! 말했어요' } = {}) {
+    const wrap = el('div', { class: 'speak-check' });
+    const statusEl = el('div', { class: 'speak-check-status' });
+    const btnRow = el('div', { class: 'row', style: 'justify-content:center;' });
+    let passed = false;
+
+    function markPassed(auto) {
+      if (passed) return;
+      passed = true;
+      wrap.classList.add('passed');
+      statusEl.innerHTML = '';
+      statusEl.appendChild(el('span', { class: 'speak-check-pass' }, auto ? '✅ Great job! You said it! 완벽해요!' : '✔ Marked done 완료 표시'));
+      btnRow.innerHTML = '';
+      if (typeof sparkleAt === 'function') sparkleAt(wrap, 12);
+      if (onPass) onPass();
+    }
+
+    if (typeof SpeechCheck !== 'undefined' && SpeechCheck.isSupported()) {
+      const micBtn = el('button', { class: 'btn secondary small', type: 'button' }, checkLabel);
+      micBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        micBtn.disabled = true;
+        statusEl.textContent = '🎧 Listening... say it now! 듣고 있어요, 지금 말해보세요!';
+        SpeechCheck.checkAgainst(expectedEn, {
+          onPass: () => markPassed(true),
+          onFail: (transcript) => {
+            micBtn.disabled = false;
+            statusEl.innerHTML = '';
+            statusEl.appendChild(el('div', { class: 'speak-check-fail' }, `🔁 Almost! I heard: "${transcript || '...'}" — try again! 다시 말해볼까요?`));
+          },
+          onError: (err) => {
+            micBtn.disabled = false;
+            statusEl.textContent = err === 'not-allowed'
+              ? '🎙️ Please allow the microphone, then tap again. 마이크를 허용해주세요.'
+              : "🔇 Didn't catch that — tap and try again. 다시 눌러서 말해보세요.";
+          },
+        });
+      });
+      btnRow.appendChild(micBtn);
+      wrap.appendChild(btnRow);
+      wrap.appendChild(statusEl);
+      const fallback = el('button', { class: 'btn ghost small', type: 'button' }, '✔ My teacher heard me 선생님이 들었어요');
+      fallback.addEventListener('click', (e) => { e.stopPropagation(); markPassed(false); });
+      wrap.appendChild(el('div', { class: 'center', style: 'margin-top:6px;' }, fallback));
+    } else {
+      const manualBtn = el('button', { class: 'btn success small', type: 'button' }, passLabel);
+      manualBtn.addEventListener('click', (e) => { e.stopPropagation(); markPassed(false); });
+      btnRow.appendChild(manualBtn);
+      wrap.appendChild(btnRow);
+      wrap.appendChild(statusEl);
+    }
+
+    return wrap;
+  }
+
   /* ---------------- Mystery box speaking activity ---------------- */
   function renderMysteryBoxes(container, items, { onAllDone, onBoxDone } = {}) {
     container.innerHTML = '';
@@ -352,20 +412,19 @@ const Activities = (() => {
         box.appendChild(el('div', { class: 'mystery-sentence' }, item.sentenceKr));
         const sayBtn = el('button', { class: 'btn secondary small', type: 'button' }, '🔊 Listen');
         sayBtn.addEventListener('click', (e) => { e.stopPropagation(); EnglishVoice.speak(item.sentenceEn); });
-        const doneBtn = el('button', { class: 'btn success small', type: 'button' }, '✔ Done! 말했어요');
-        doneBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (!box.classList.contains('done')) {
-            box.classList.add('done');
-            doneCount++;
-            status.textContent = `${doneCount} / ${items.length} done 완료`;
-            if (typeof sparkleAt === 'function') sparkleAt(box);
-            if (onBoxDone) onBoxDone(idx);
-            if (doneCount === items.length && onAllDone) onAllDone();
-          }
-        });
         box.appendChild(sayBtn);
-        box.appendChild(doneBtn);
+        box.appendChild(speakCheckWidget(item.sentenceEn, {
+          onPass: () => {
+            if (!box.classList.contains('done')) {
+              box.classList.add('done');
+              doneCount++;
+              status.textContent = `${doneCount} / ${items.length} done 완료`;
+              if (typeof sparkleAt === 'function') sparkleAt(box);
+              if (onBoxDone) onBoxDone(idx);
+              if (doneCount === items.length && onAllDone) onAllDone();
+            }
+          },
+        }));
         EnglishVoice.speak(item.sentenceEn);
       });
       grid.appendChild(box);
@@ -410,7 +469,7 @@ const Activities = (() => {
   }
 
   return {
-    shuffle, el, speakBtn, iconNode,
+    shuffle, el, speakBtn, iconNode, speakCheckWidget,
     renderFlashcards,
     renderListenAndClick,
     renderMultipleChoiceQuiz,
