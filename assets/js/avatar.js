@@ -1,13 +1,28 @@
 /* ============================================================
-   Avatar — a Minecraft-style voxel character the student builds
-   and grows through their English learning journey.
+   Avatar — a stylized character the student builds and grows
+   through their English learning journey.
 
    Rendered with pure CSS 3D (transform-style: preserve-3d), not a
-   WebGL engine: the character is only a handful of boxes, so CSS
-   draws it natively with zero dependencies and gives us smooth
-   PowerPoint-Morph-style interpolation for free — every color and
-   pose change is just a CSS transition. Runs well on school
+   WebGL engine: the character is a few dozen boxes, so CSS draws it
+   natively with zero dependencies and runs well on school
    Chromebooks.
+
+   PROPORTIONS are Fortnite-ish rather than Minecraft-ish: a small
+   head (~1/5 of height instead of 1/4), broad shoulders tapering to
+   a narrower waist, and limbs that TAPER from upper to lower
+   segment. Nothing is a plain cube.
+
+   The rig is JOINTED. Each limb is built as
+       anchor (static translate to the joint)
+         └── pivot (rotation only — this is what animates)
+              ├── segment box
+              └── anchor (next joint down)
+   so a shoulder can swing the whole arm while the elbow bends
+   independently. Keeping the translate on the anchor and the
+   rotation on the pivot means keyframes only ever touch rotation,
+   which is what makes real cycles (a walk, a wave) possible —
+   an earlier version put both on one element, so every pose could
+   only be a single frozen transform.
 
    Items unlock as units are completed, and each unlock is tied to
    what that unit actually taught (Unit 4 Animals -> animal ears,
@@ -117,25 +132,22 @@ const Avatar = (() => {
     return CATALOG[category].options.find(o => o.id === id) || CATALOG[category].options[0];
   }
 
-  /* ---------------- CSS-3D box builder ----------------
-     One <div class="vox"> per box, with six absolutely-positioned
-     faces rotated into place. Sizes are in "voxel units" scaled by
-     --vox-scale so the whole rig resizes from one variable. */
+  /* ---------------- box + joint builders ---------------- */
 
   const FACES = ['front', 'back', 'right', 'left', 'top', 'bottom'];
 
-  function makeBox({ w, h, d, x = 0, y = 0, z = 0, cls = '', name = '' }) {
+  /* A box centred on (x, y, z) in voxel units. `round` softens the
+     silhouette so limbs don't read as hard cubes. */
+  function makeBox({ w, h, d, x = 0, y = 0, z = 0, cls = '', round = 0.28 }) {
     const box = document.createElement('div');
     box.className = `vox ${cls}`;
-    if (name) box.dataset.part = name;
     box.style.width = `calc(var(--vox) * ${w})`;
     box.style.height = `calc(var(--vox) * ${h})`;
-    /* Rest position goes into custom properties rather than an inline
-       `transform`, because an inline transform would outrank the pose
-       rules in the stylesheet and poses would silently never apply. */
-    box.style.setProperty('--px', `calc(var(--vox) * ${x})`);
-    box.style.setProperty('--py', `calc(var(--vox) * ${y})`);
-    box.style.setProperty('--pz', `calc(var(--vox) * ${z})`);
+    /* The div's top-left sits at the translate point while its faces are
+       centred inside it, so shift back by half the box to make (x, y, z)
+       mean the box's CENTRE. Without this every part is displaced by half
+       its own size and the body comes apart at the joints. */
+    box.style.transform = `translate3d(calc(var(--vox) * ${x - w / 2}), calc(var(--vox) * ${y - h / 2}), calc(var(--vox) * ${z}))`;
 
     FACES.forEach(face => {
       const el = document.createElement('div');
@@ -150,35 +162,123 @@ const Avatar = (() => {
       el.style.width = `calc(var(--vox) * ${fw})`;
       el.style.height = `calc(var(--vox) * ${fh})`;
       el.style.transform = `translate(-50%, -50%) ${tf}`;
+      if (round) el.style.borderRadius = `calc(var(--vox) * ${round})`;
       box.appendChild(el);
     });
     return box;
   }
 
-  function paint(box, color) {
-    box.querySelectorAll('.vox-face').forEach(f => { f.style.background = color; });
-    // Shade the sides so the character reads as solid rather than flat.
-    const side = box.querySelector('.vox-left');
-    const right = box.querySelector('.vox-right');
-    const top = box.querySelector('.vox-top');
-    const bottom = box.querySelector('.vox-bottom');
-    if (side) side.style.filter = 'brightness(0.82)';
-    if (right) right.style.filter = 'brightness(0.9)';
-    if (top) top.style.filter = 'brightness(1.12)';
-    if (bottom) bottom.style.filter = 'brightness(0.7)';
+  /* Static positioning node: moves the origin to a joint. */
+  function anchor(x, y, z, cls = '') {
+    const a = document.createElement('div');
+    a.className = `joint-anchor ${cls}`;
+    a.style.transform = `translate3d(calc(var(--vox) * ${x}), calc(var(--vox) * ${y}), calc(var(--vox) * ${z}))`;
+    return a;
+  }
+
+  /* Rotating node: the ONLY thing animations touch. */
+  function pivot(cls) {
+    const p = document.createElement('div');
+    p.className = `joint-pivot ${cls}`;
+    return p;
   }
 
   /* ---------------- the rig ----------------
-     Minecraft proportions in voxel units:
-     head 8x8x8, body 8x12x4, arm 4x12x4, leg 4x12x4. */
+     Voxel units, origin at the hip line. Negative y is up.
+     Head is ~6.4 tall against a ~33 tall figure. */
+
+  const P = {
+    head:     { w: 5.9, h: 6.0, d: 5.7 },
+    neck:     { w: 3.1, h: 1.2, d: 3.0 },
+    chest:    { w: 8.2, h: 7.0, d: 4.3 },
+    waist:    { w: 6.4, h: 4.2, d: 3.9 },
+    hips:     { w: 7.0, h: 2.6, d: 4.0 },
+    upperArm: { w: 2.7, h: 6.0, d: 2.9 },
+    foreArm:  { w: 2.3, h: 5.4, d: 2.5 },
+    hand:     { w: 2.6, h: 2.5, d: 2.6 },
+    thigh:    { w: 3.5, h: 7.4, d: 3.7 },
+    shin:     { w: 3.0, h: 7.0, d: 3.2 },
+    foot:     { w: 3.3, h: 2.0, d: 5.0 },
+  };
+
+  const SHOULDER_Y = -10.4;
+  const SHOULDER_X = 4.3;
+  const HIP_X = 1.95;
+
+  function buildArm(side) {
+    const sign = side === 'l' ? -1 : 1;
+    const shoulder = anchor(sign * SHOULDER_X, SHOULDER_Y, 0, `anchor-shoulder-${side}`);
+    const shoulderPivot = pivot(`pivot-shoulder pivot-shoulder-${side}`);
+
+    const upper = makeBox({ ...P.upperArm, y: P.upperArm.h / 2, cls: `part-upperarm arm-${side}` });
+    shoulderPivot.appendChild(upper);
+
+    const elbow = anchor(0, P.upperArm.h, 0, `anchor-elbow-${side}`);
+    const elbowPivot = pivot(`pivot-elbow pivot-elbow-${side}`);
+    const fore = makeBox({ ...P.foreArm, y: P.foreArm.h / 2, cls: `part-forearm arm-${side}` });
+    const hand = makeBox({ ...P.hand, y: P.foreArm.h + P.hand.h / 2 - 0.3, cls: `part-hand hand-${side}`, round: 0.5 });
+    elbowPivot.appendChild(fore);
+    elbowPivot.appendChild(hand);
+    elbow.appendChild(elbowPivot);
+    shoulderPivot.appendChild(elbow);
+
+    shoulder.appendChild(shoulderPivot);
+    return { shoulder, upper, fore, hand };
+  }
+
+  function buildLeg(side) {
+    const sign = side === 'l' ? -1 : 1;
+    const hip = anchor(sign * HIP_X, 1.0, 0, `anchor-hip-${side}`);
+    const hipPivot = pivot(`pivot-hip pivot-hip-${side}`);
+
+    const thigh = makeBox({ ...P.thigh, y: P.thigh.h / 2, cls: `part-thigh leg-${side}` });
+    hipPivot.appendChild(thigh);
+
+    const knee = anchor(0, P.thigh.h, 0, `anchor-knee-${side}`);
+    const kneePivot = pivot(`pivot-knee pivot-knee-${side}`);
+    const shin = makeBox({ ...P.shin, y: P.shin.h / 2, cls: `part-shin leg-${side}` });
+    const foot = makeBox({ ...P.foot, y: P.shin.h + P.foot.h / 2 - 0.2, z: 0.9, cls: `part-foot foot-${side}`, round: 0.5 });
+    kneePivot.appendChild(shin);
+    kneePivot.appendChild(foot);
+    knee.appendChild(kneePivot);
+    hipPivot.appendChild(knee);
+
+    hip.appendChild(hipPivot);
+    return { hip, thigh, shin, foot };
+  }
 
   function buildRig(container) {
     container.innerHTML = '';
     const rig = document.createElement('div');
     rig.className = 'avatar-rig';
 
-    const head = makeBox({ w: 8, h: 8, d: 8, y: -16, cls: 'part-head', name: 'head' });
-    // Face details live on the head's front face.
+    /* Root pivot lets the whole body bob/lean without disturbing the
+       stage's rotation, which lives on .avatar-rig itself. */
+    const root = pivot('pivot-root');
+    rig.appendChild(root);
+
+    const torso = pivot('pivot-torso');
+    root.appendChild(torso);
+
+    const hips = makeBox({ ...P.hips, y: 0.6, cls: 'part-hips' });
+    const waist = makeBox({ ...P.waist, y: -2.3, cls: 'part-waist' });
+    const chest = makeBox({ ...P.chest, y: -7.6, cls: 'part-chest' });
+    torso.appendChild(hips);
+    torso.appendChild(waist);
+    torso.appendChild(chest);
+
+    // head, on its own pivot so it can turn and nod
+    const neckAnchor = anchor(0, -11.3, 0, 'anchor-neck');
+    const neckPivot = pivot('pivot-neck');
+    /* Derive the hair/hat/ear placement from where the head actually is,
+       rather than hand-tuned constants — otherwise any tweak to head size
+       leaves the hair floating off the skull. */
+    const headCY = -(P.neck.h + P.head.h / 2) + 0.4;
+    const headTop = headCY - P.head.h / 2;
+
+    const neck = makeBox({ ...P.neck, y: -P.neck.h / 2, cls: 'part-neck' });
+    const head = makeBox({ ...P.head, y: headCY, cls: 'part-head', round: 0.7 });
+
     const face = head.querySelector('.vox-front');
     face.classList.add('has-face');
     ['eye-l', 'eye-r', 'mouth'].forEach(k => {
@@ -187,34 +287,60 @@ const Avatar = (() => {
       face.appendChild(d);
     });
 
-    // Hair sits as a cap over the top of the head so the face stays visible.
-    const hair = makeBox({ w: 8.5, h: 3.6, d: 8.5, y: -18.2, cls: 'part-hair', name: 'hair' });
-    const hat = makeBox({ w: 9, h: 3, d: 9, y: -21, cls: 'part-hat', name: 'hat' });
-    const earL = makeBox({ w: 2, h: 2.4, d: 1.4, x: -2.4, y: -21.5, cls: 'part-ear', name: 'earL' });
-    const earR = makeBox({ w: 2, h: 2.4, d: 1.4, x: 2.4, y: -21.5, cls: 'part-ear', name: 'earR' });
+    /* Hair overlaps the top of the skull (so no skin seam shows) and
+       rises a little above it. */
+    const hairH = 3.6;
+    const hair = makeBox({
+      w: P.head.w + 0.45, h: hairH, d: P.head.d + 0.45,
+      y: headTop + 0.8, cls: 'part-hair', round: 0.9,
+    });
+    const hat = makeBox({
+      w: P.head.w + 1.0, h: 2.4, d: P.head.d + 1.0,
+      y: headTop - 0.7, cls: 'part-hat', round: 0.5,
+    });
+    const earL = makeBox({ w: 1.6, h: 2.1, d: 1.2, x: -2.0, y: headTop - 0.9, cls: 'part-ear', round: 0.3 });
+    const earR = makeBox({ w: 1.6, h: 2.1, d: 1.2, x: 2.0, y: headTop - 0.9, cls: 'part-ear', round: 0.3 });
 
-    const body = makeBox({ w: 8, h: 12, d: 4, y: -6, cls: 'part-body', name: 'body' });
+    [neck, head, hair, hat, earL, earR].forEach(p => neckPivot.appendChild(p));
+    neckAnchor.appendChild(neckPivot);
+    torso.appendChild(neckAnchor);
 
-    const armL = makeBox({ w: 4, h: 12, d: 4, x: -6, y: -6, cls: 'part-arm arm-l', name: 'armL' });
-    const armR = makeBox({ w: 4, h: 12, d: 4, x: 6, y: -6, cls: 'part-arm arm-r', name: 'armR' });
-    // Hands: lower slice of each arm stays skin-colored.
-    const handL = makeBox({ w: 4.1, h: 3.6, d: 4.1, x: -6, y: -0.2, cls: 'part-hand hand-l', name: 'handL' });
-    const handR = makeBox({ w: 4.1, h: 3.6, d: 4.1, x: 6, y: -0.2, cls: 'part-hand hand-r', name: 'handR' });
+    const armL = buildArm('l');
+    const armR = buildArm('r');
+    torso.appendChild(armL.shoulder);
+    torso.appendChild(armR.shoulder);
 
-    // Slight gap between the legs so they read as two limbs, not one block.
-    const legL = makeBox({ w: 3.8, h: 12, d: 4, x: -2.05, y: 6, cls: 'part-leg leg-l', name: 'legL' });
-    const legR = makeBox({ w: 3.8, h: 12, d: 4, x: 2.05, y: 6, cls: 'part-leg leg-r', name: 'legR' });
+    const legL = buildLeg('l');
+    const legR = buildLeg('r');
+    root.appendChild(legL.hip);
+    root.appendChild(legR.hip);
 
-    [body, armL, armR, handL, handR, legL, legR, head, hair, hat, earL, earR].forEach(p => rig.appendChild(p));
     container.appendChild(rig);
 
     return {
       rig,
-      parts: { head, hair, hat, earL, earR, body, armL, armR, handL, handR, legL, legR },
+      parts: {
+        head, hair, hat, earL, earR, neck,
+        hips, waist, chest,
+        upperArmL: armL.upper, foreArmL: armL.fore, handL: armL.hand,
+        upperArmR: armR.upper, foreArmR: armR.fore, handR: armR.hand,
+        thighL: legL.thigh, shinL: legL.shin, footL: legL.foot,
+        thighR: legR.thigh, shinR: legR.shin, footR: legR.foot,
+      },
     };
   }
 
-  /* ---------------- applying a look ---------------- */
+  /* ---------------- painting ---------------- */
+
+  function paint(box, color) {
+    box.querySelectorAll('.vox-face').forEach(f => { f.style.background = color; });
+    // Shade the sides so the character reads as solid rather than flat.
+    const q = (sel, filter) => { const n = box.querySelector(sel); if (n) n.style.filter = filter; };
+    q('.vox-left', 'brightness(0.82)');
+    q('.vox-right', 'brightness(0.9)');
+    q('.vox-top', 'brightness(1.12)');
+    q('.vox-bottom', 'brightness(0.7)');
+  }
 
   function applyConfig(built, config) {
     const { parts } = built;
@@ -224,14 +350,13 @@ const Avatar = (() => {
     const pants = findOption('pants', config.pants).color;
     const hatOpt = findOption('hat', config.hat);
 
-    paint(parts.head, skin);
-    paint(parts.handL, skin);
-    paint(parts.handR, skin);
-    paint(parts.body, shirt);
-    paint(parts.armL, shirt);
-    paint(parts.armR, shirt);
-    paint(parts.legL, pants);
-    paint(parts.legR, pants);
+    // skin
+    [parts.head, parts.neck, parts.handL, parts.handR, parts.foreArmL, parts.foreArmR].forEach(p => paint(p, skin));
+    // shirt covers torso + upper arms
+    [parts.chest, parts.waist, parts.upperArmL, parts.upperArmR].forEach(p => paint(p, shirt));
+    // pants cover hips + legs; shoes stay dark
+    [parts.hips, parts.thighL, parts.thighR, parts.shinL, parts.shinR].forEach(p => paint(p, pants));
+    [parts.footL, parts.footR].forEach(p => paint(p, '#2f3340'));
 
     if (hairOpt.color) {
       paint(parts.hair, hairOpt.color);
@@ -254,7 +379,7 @@ const Avatar = (() => {
     }
   }
 
-  /* ---------------- interaction: drag to rotate ---------------- */
+  /* ---------------- interaction ---------------- */
 
   function enableDragRotate(stage, rig) {
     let dragging = false, startX = 0, startRot = -25, rot = -25;
