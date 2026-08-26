@@ -1,0 +1,203 @@
+/* ============================================================
+   World map home page.
+   ============================================================ */
+
+.wm-wrap {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  background: #cdeaf7;
+}
+
+.wm-svg { display: block; width: 100%; height: auto; }
+
+.wm-ocean { fill: #cdeaf7; }
+.wm-land {
+  fill: #8fd694;
+  stroke: #6cbf78;
+  stroke-width: 2;
+}
+
+/* The full route is faint; the part already travelled is drawn solid
+   on top, so progress reads as distance covered. */
+.wm-route {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 3;
+  stroke-dasharray: 2 10;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+.wm-route-done {
+  fill: none;
+  stroke: #ffb043;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.95;
+}
+
+.wm-pin { cursor: pointer; }
+.wm-dot {
+  fill: #fff;
+  stroke: #ffffff;
+  stroke-width: 3;
+  transition: transform 0.18s cubic-bezier(0.34, 1.4, 0.5, 1);
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.wm-beg { fill: #6bcf9c; }
+.wm-int { fill: #4fb0e0; }
+.wm-adv { fill: #9269d4; }
+
+.wm-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 17px;
+  fill: #fff;
+  pointer-events: none;
+  user-select: none;
+}
+
+.wm-pin:hover .wm-dot,
+.wm-pin:focus-visible .wm-dot { transform: scale(1.22); }
+.wm-pin:focus-visible { outline: none; }
+.wm-pin:focus-visible .wm-dot { stroke: var(--color-accent-dark); }
+
+.wm-pin.is-done .wm-dot { fill: #2e9e63; }
+
+/* the unit you're on next */
+.wm-halo {
+  fill: rgba(255, 176, 67, 0.32);
+  animation: wmPulse 1.9s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes wmPulse {
+  0%, 100% { transform: scale(0.72); opacity: 0.85; }
+  50%      { transform: scale(1.06); opacity: 0.28; }
+}
+
+/* ---------- detail card ---------- */
+
+.wm-card {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translate(-50%, 130%);
+  width: min(420px, calc(100% - 28px));
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  padding: 20px 22px 22px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+  z-index: 3;
+}
+.wm-card.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.wm-card h3 { margin-top: 4px; }
+.wm-card-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 1rem;
+  color: var(--color-ink-soft);
+  background: none;
+}
+.wm-card-emoji { font-size: 2.6rem; line-height: 1; }
+.wm-card-tier {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.72rem;
+  padding: 3px 12px;
+  border-radius: 999px;
+  margin: 8px 0 2px;
+}
+.wm-tier-beg { background: #eafbf1; color: #2e9e63; }
+.wm-tier-int { background: #e6f4fd; color: #1f7fb0; }
+.wm-tier-adv { background: #f4edff; color: #7a4de0; }
+.wm-card-done { color: #2e9e63; font-weight: 800; margin-top: 6px; }
+.wm-card-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+/* ---------- legend + progress ---------- */
+
+.wm-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 18px 0 6px;
+}
+.wm-legend { display: flex; gap: 14px; flex-wrap: wrap; }
+.wm-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+}
+.wm-legend i {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.wm-legend .lg-beg { background: #6bcf9c; }
+.wm-legend .lg-int { background: #4fb0e0; }
+.wm-legend .lg-adv { background: #9269d4; }
+.wm-legend .lg-done { background: #2e9e63; }
+
+.wm-progress {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--color-primary-dark);
+}
+.wm-progress .kr { font-size: 0.78rem; font-weight: 600; color: var(--color-ink-soft); margin-left: 6px; }
+
+.view-toggle {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--color-bg-alt);
+  padding: 4px;
+  border-radius: 999px;
+}
+.view-toggle button {
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 6px 16px;
+  border-radius: 999px;
+  color: var(--color-ink-soft);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.view-toggle button.active { background: #fff; color: var(--color-primary-dark); box-shadow: var(--shadow-soft); }
+
+.unit-card.is-done { border-color: #9ddcb8; }
+.done-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 1.15rem;
+}
+
+@media (max-width: 700px) {
+  .wm-num { font-size: 22px; }
+  .wm-card { bottom: 10px; padding: 16px 18px 18px; }
+  .wm-bar { justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wm-halo { animation: none; }
+  .wm-card, .wm-dot { transition: none; }
+}
