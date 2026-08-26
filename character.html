@@ -37,6 +37,7 @@
         <div id="avatarMount"></div>
         <div class="stage-caption">🖱️ Drag to spin · <span class="kr">드래그해서 돌려보세요</span></div>
       </div>
+      <p class="emote-hint" id="emoteHint"></p>
       <div class="center" style="margin-top:16px;">
         <a class="btn ghost small" href="index.html">◀ Back to Units <span class="kr" style="font-size:0.8em;">유닛으로</span></a>
       </div>
@@ -83,27 +84,44 @@
     Avatar.enableDragRotate(stage, built.rig);
     Avatar.setPose(built, 'idle');
 
-    /* ---- poses ---- */
-    const POSES = [
-      { id: 'idle', label: '🧍 Stand' },
-      { id: 'wave', label: '👋 Wave' },
-      { id: 'walk', label: '🚶 Walk' },
-      { id: 'cheer', label: '🎉 Cheer' },
-    ];
+    /* ---- emotes ----
+       Locked emotes stay visible on purpose: seeing the move you have
+       not earned yet is the motivation. Tapping one says which unit
+       unlocks it rather than doing nothing. */
     const poseBar = document.getElementById('poseBar');
-    POSES.forEach((p, i) => {
-      const b = document.createElement('button');
-      b.className = 'pose-btn' + (i === 0 ? ' active' : '');
-      b.type = 'button';
-      b.textContent = p.label;
-      b.addEventListener('click', (e) => {
-        e.stopPropagation();
-        poseBar.querySelectorAll('.pose-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        Avatar.setPose(built, p.id);
+    const emoteHint = document.getElementById('emoteHint');
+
+    function renderEmotes() {
+      poseBar.innerHTML = '';
+      Avatar.EMOTES.forEach((emote, i) => {
+        const unlocked = Avatar.isEmoteUnlocked(emote, progress);
+        const b = document.createElement('button');
+        b.className = 'pose-btn' + (i === 0 ? ' active' : '') + (unlocked ? '' : ' locked');
+        b.type = 'button';
+        b.innerHTML = `${unlocked ? emote.emoji : '🔒'} ${emote.labelEn}`
+          + `<span class="pose-kr">${emote.labelKr}</span>`;
+        b.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!unlocked) {
+            const unitName = UNIT_NAMES[emote.unlockUnit] || emote.unlockUnit;
+            emoteHint.textContent = `🔒 Finish ${unitName} to unlock "${emote.labelEn}"! · ${unitName}을(를) 완료하면 열려요!`;
+            b.classList.remove('shake');
+            void b.offsetWidth;
+            b.classList.add('shake');
+            return;
+          }
+          poseBar.querySelectorAll('.pose-btn').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          Avatar.setPose(built, emote.id);
+          emoteHint.textContent = `${emote.emoji} ${emote.labelEn} · ${emote.labelKr}`;
+        });
+        poseBar.appendChild(b);
       });
-      poseBar.appendChild(b);
-    });
+    }
+    renderEmotes();
+
+    const es = Avatar.emoteStats(progress);
+    emoteHint.textContent = `🕺 ${es.unlocked} / ${es.total} emotes unlocked · 동작 ${es.unlocked}개 열림`;
 
     /* ---- wardrobe ---- */
     const wardrobe = document.getElementById('wardrobe');

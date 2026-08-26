@@ -215,6 +215,18 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 .tag.vocab { background: #eafbf1; color: #2e9e63; }
 .tag.speak { background: #f4edff; color: #7a4de0; }
 
+/* Sets expectations before a tier whose units work differently
+   from the Beginner drills (conversation + spoken answers). */
+.level-note {
+  background: #f4edff;
+  border-left: 4px solid var(--color-purple);
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  margin-bottom: 18px;
+}
+.level-note-en { display: block; font-weight: 700; color: var(--color-ink); }
+.level-note-kr { display: block; font-size: 0.85rem; color: var(--color-ink-soft); margin-top: 3px; }
+
 .unit-card-wrap { position: relative; }
 .jp-mini-link {
   position: absolute;

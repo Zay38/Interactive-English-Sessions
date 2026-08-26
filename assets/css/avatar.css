@@ -73,16 +73,40 @@
   width: 0;
   height: 0;
   transform-style: preserve-3d;
+  /* The stage's orbit lives here; body motion lives on .pivot-root
+     below, so dragging to rotate never fights the animation. */
   transform: perspective(900px) rotateX(-8deg) rotateY(var(--spin));
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  animation: avatarBreathe 3.6s ease-in-out infinite;
   z-index: 1;
 }
-.avatar-stage.dragging .avatar-rig { transition: none; animation-play-state: paused; }
+.avatar-stage.dragging .avatar-rig { transition: none; }
 
-@keyframes avatarBreathe {
-  0%, 100% { translate: 0 0; }
-  50%      { translate: 0 -5px; }
+/* Joint scaffolding.
+   anchor = static translate to the joint position (never animated)
+   pivot  = rotation only (this is what keyframes drive)
+   Splitting them is what allows real cycles: a single element
+   carrying both could only ever hold one frozen transform. */
+.joint-anchor,
+.joint-pivot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+.joint-pivot {
+  /* rotate about the joint itself, not the limb's centre */
+  transform-origin: 50% 0%;
+  /* Only applies when SWITCHING emotes — during an emote the keyframes
+     take over. This is what makes one move blend into the next instead
+     of snapping. */
+  transition: transform 0.45s cubic-bezier(0.34, 1.3, 0.44, 1);
+  /* Promote every joint to its own compositor layer up front. Without
+     this the browser re-rasterises limbs mid-animation and the motion
+     micro-stutters on low-end school laptops. */
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .vox {
@@ -90,9 +114,7 @@
   transform-style: preserve-3d;
   left: 0;
   top: 0;
-  transform: translate3d(var(--px, 0px), var(--py, 0px), var(--pz, 0px));
-  /* the morph: parts glide between poses instead of snapping */
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+  transition: opacity 0.35s ease;
 }
 .vox.hidden { opacity: 0; pointer-events: none; }
 
@@ -112,61 +134,536 @@
 .face-bit {
   position: absolute;
   background: #2b2b33;
-  border-radius: 1px;
+  border-radius: 40%;
   transition: all 0.4s ease;
 }
 .face-bit.eye-l, .face-bit.eye-r {
-  width: 15%;
-  height: 15%;
-  top: 50%;
+  width: 13%;
+  height: 16%;
+  top: 46%;
   animation: avatarBlink 5.2s infinite;
 }
-.face-bit.eye-l { left: 24%; }
-.face-bit.eye-r { right: 24%; }
+.face-bit.eye-l { left: 25%; }
+.face-bit.eye-r { right: 25%; }
 @keyframes avatarBlink {
   0%, 92%, 100% { transform: scaleY(1); }
   95%           { transform: scaleY(0.12); }
 }
 .face-bit.mouth {
-  width: 24%;
-  height: 7%;
-  left: 38%;
-  top: 73%;
-  border-radius: 0 0 4px 4px;
+  width: 22%;
+  height: 6%;
+  left: 39%;
+  top: 71%;
+  border-radius: 0 0 40% 40%;
   background: #7a4a44;
 }
 
 /* ---------- hat shape variants ---------- */
 
-.part-hat.hat-tall { height: calc(var(--vox) * 6); }
-.part-hat.hat-flat { height: calc(var(--vox) * 1.2); width: calc(var(--vox) * 12); }
+.part-hat.hat-tall { height: calc(var(--vox) * 5.5); }
+.part-hat.hat-flat { height: calc(var(--vox) * 1.1); width: calc(var(--vox) * 11); }
 
-/* ---------- poses (each is a morph target) ---------- */
+/* ============================================================
+   POSES — real looping animations, not frozen transforms.
 
-/* Each pose rotates a limb about its shoulder/hip (the top edge of the
-   box) rather than its centre, so the joint stays put while the limb
-   swings. */
-.avatar-rig[data-pose] .part-arm,
-.avatar-rig[data-pose] .part-leg { transform-origin: 50% 0%; }
+   Every pose drives .joint-pivot rotations. Limb pairs share one
+   keyframe set and are offset by half a cycle with a negative
+   animation-delay, which is what makes a walk alternate instead of
+   both legs swinging together.
+   ============================================================ */
 
-.avatar-rig[data-pose='wave'] .arm-r {
-  transform: translate3d(var(--px), var(--py), var(--pz)) rotate(155deg);
+/* ---- rest pose: a natural stance, arms slightly out and bent ---- */
+.pivot-shoulder-l { transform: rotateZ(4deg); }
+.pivot-shoulder-r { transform: rotateZ(-4deg); }
+.pivot-elbow-l,
+.pivot-elbow-r { transform: rotateX(8deg); }
+
+/* ---- IDLE: breathing, weight shift, gentle arm sway ---- */
+.avatar-rig[data-pose='idle'] .pivot-root { animation: idleBob 3.6s ease-in-out infinite; }
+.avatar-rig[data-pose='idle'] .pivot-torso { animation: idleTorso 3.6s ease-in-out infinite; }
+.avatar-rig[data-pose='idle'] .pivot-neck { animation: idleHead 7.2s ease-in-out infinite; }
+.avatar-rig[data-pose='idle'] .pivot-shoulder-l { animation: idleArmL 3.6s ease-in-out infinite; }
+.avatar-rig[data-pose='idle'] .pivot-shoulder-r { animation: idleArmR 3.6s ease-in-out infinite; }
+
+@keyframes idleBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(var(--vox) * 0.42)); }
 }
-.avatar-rig[data-pose='wave'] .hand-r { opacity: 0; }
-
-.avatar-rig[data-pose='walk'] .leg-l { transform: translate3d(var(--px), var(--py), var(--pz)) rotateX(28deg); }
-.avatar-rig[data-pose='walk'] .leg-r { transform: translate3d(var(--px), var(--py), var(--pz)) rotateX(-28deg); }
-.avatar-rig[data-pose='walk'] .arm-l { transform: translate3d(var(--px), var(--py), var(--pz)) rotateX(-24deg); }
-.avatar-rig[data-pose='walk'] .arm-r { transform: translate3d(var(--px), var(--py), var(--pz)) rotateX(24deg); }
-.avatar-rig[data-pose='walk'] .part-hand { opacity: 0; }
-
-.avatar-rig[data-pose='cheer'] .arm-l {
-  transform: translate3d(var(--px), var(--py), var(--pz)) rotate(-160deg);
+@keyframes idleTorso {
+  0%, 100% { transform: rotateZ(0deg) rotateY(0deg); }
+  50%      { transform: rotateZ(1.2deg) rotateY(2deg); }
 }
-.avatar-rig[data-pose='cheer'] .arm-r {
-  transform: translate3d(var(--px), var(--py), var(--pz)) rotate(160deg);
+@keyframes idleHead {
+  0%, 100% { transform: rotateY(0deg) rotateZ(0deg); }
+  30%      { transform: rotateY(-9deg) rotateZ(1.5deg); }
+  65%      { transform: rotateY(7deg) rotateZ(-1deg); }
 }
-.avatar-rig[data-pose='cheer'] .part-hand { opacity: 0; }
+@keyframes idleArmL {
+  0%, 100% { transform: rotateZ(4deg) rotateX(0deg); }
+  50%      { transform: rotateZ(6deg) rotateX(-4deg); }
+}
+@keyframes idleArmR {
+  0%, 100% { transform: rotateZ(-4deg) rotateX(0deg); }
+  50%      { transform: rotateZ(-6deg) rotateX(4deg); }
+}
+
+/* ---- WAVE: arm raised, forearm actually waving ---- */
+.avatar-rig[data-pose='wave'] .pivot-root { animation: idleBob 3.2s ease-in-out infinite; }
+.avatar-rig[data-pose='wave'] .pivot-neck { animation: waveHead 1.1s ease-in-out infinite; }
+.avatar-rig[data-pose='wave'] .pivot-shoulder-r {
+  transform: rotateZ(-142deg) rotateX(6deg);
+}
+.avatar-rig[data-pose='wave'] .pivot-elbow-r {
+  animation: waveForearm 0.62s ease-in-out infinite;
+}
+.avatar-rig[data-pose='wave'] .pivot-shoulder-l { animation: idleArmL 3.2s ease-in-out infinite; }
+
+@keyframes waveForearm {
+  0%, 100% { transform: rotateZ(-26deg); }
+  50%      { transform: rotateZ(22deg); }
+}
+@keyframes waveHead {
+  0%, 100% { transform: rotateZ(-3deg); }
+  50%      { transform: rotateZ(3deg); }
+}
+
+/* ---- WALK: contact -> down -> passing -> up, mirrored per side ----
+   Legs and arms share one cycle length; the right side runs the same
+   keyframes shifted half a period so the gait alternates. Arms use
+   the leg keyframes inverted, which is what produces the natural
+   counter-swing. */
+.avatar-rig[data-pose='walk'] .pivot-root    { animation: walkBob 1s ease-in-out infinite; }
+.avatar-rig[data-pose='walk'] .pivot-torso   { animation: walkTorso 1s ease-in-out infinite; }
+.avatar-rig[data-pose='walk'] .pivot-neck    { animation: walkHead 1s ease-in-out infinite; }
+
+.avatar-rig[data-pose='walk'] .pivot-hip-l   { animation: walkThigh 1s ease-in-out infinite; }
+.avatar-rig[data-pose='walk'] .pivot-hip-r   { animation: walkThigh 1s ease-in-out infinite -0.5s; }
+.avatar-rig[data-pose='walk'] .pivot-knee-l  { animation: walkKnee 1s ease-in-out infinite; }
+.avatar-rig[data-pose='walk'] .pivot-knee-r  { animation: walkKnee 1s ease-in-out infinite -0.5s; }
+
+.avatar-rig[data-pose='walk'] .pivot-shoulder-l { animation: walkArm 1s ease-in-out infinite -0.5s; }
+.avatar-rig[data-pose='walk'] .pivot-shoulder-r { animation: walkArm 1s ease-in-out infinite; }
+.avatar-rig[data-pose='walk'] .pivot-elbow-l    { animation: walkElbow 1s ease-in-out infinite -0.5s; }
+.avatar-rig[data-pose='walk'] .pivot-elbow-r    { animation: walkElbow 1s ease-in-out infinite; }
+
+@keyframes walkThigh {
+  0%   { transform: rotateX(26deg); }   /* contact — leg forward   */
+  25%  { transform: rotateX(2deg); }    /* passing under the body  */
+  50%  { transform: rotateX(-22deg); }  /* push off — leg back     */
+  75%  { transform: rotateX(0deg); }    /* swinging through        */
+  100% { transform: rotateX(26deg); }
+}
+@keyframes walkKnee {
+  0%   { transform: rotateX(6deg); }    /* nearly straight on contact */
+  15%  { transform: rotateX(22deg); }   /* recoil — absorbs weight    */
+  30%  { transform: rotateX(8deg); }
+  50%  { transform: rotateX(16deg); }
+  68%  { transform: rotateX(54deg); }   /* deep bend clearing the ground */
+  85%  { transform: rotateX(24deg); }
+  100% { transform: rotateX(6deg); }
+}
+/* Arm swing stays modest: a walking arm travels roughly 20 degrees at
+   the shoulder and keeps a fairly constant elbow bend. Swinging harder
+   (or pumping the elbow) throws the forearm out horizontally and reads
+   as marching rather than walking. */
+@keyframes walkArm {
+  0%   { transform: rotateX(-17deg) rotateZ(5deg); }
+  50%  { transform: rotateX(17deg) rotateZ(5deg); }
+  100% { transform: rotateX(-17deg) rotateZ(5deg); }
+}
+@keyframes walkElbow {
+  0%   { transform: rotateX(20deg); }
+  50%  { transform: rotateX(29deg); }
+  100% { transform: rotateX(20deg); }
+}
+@keyframes walkBob {
+  0%, 50%, 100% { transform: translateY(calc(var(--vox) * 0.55)); } /* lowest at each contact */
+  25%, 75%      { transform: translateY(0); }                       /* highest mid-stride     */
+}
+@keyframes walkTorso {
+  0%, 100% { transform: rotateY(-5deg) rotateX(4deg); }
+  50%      { transform: rotateY(5deg) rotateX(4deg); }
+}
+@keyframes walkHead {
+  0%, 100% { transform: rotateY(4deg); }
+  50%      { transform: rotateY(-4deg); }
+}
+
+/* ---- CHEER: hop with both arms pumping ---- */
+.avatar-rig[data-pose='cheer'] .pivot-root { animation: cheerHop 0.62s cubic-bezier(0.3, 0, 0.4, 1) infinite; }
+.avatar-rig[data-pose='cheer'] .pivot-shoulder-l { animation: cheerArmL 0.62s ease-in-out infinite; }
+.avatar-rig[data-pose='cheer'] .pivot-shoulder-r { animation: cheerArmR 0.62s ease-in-out infinite; }
+.avatar-rig[data-pose='cheer'] .pivot-knee-l,
+.avatar-rig[data-pose='cheer'] .pivot-knee-r { animation: cheerKnee 0.62s ease-in-out infinite; }
+.avatar-rig[data-pose='cheer'] .pivot-neck { animation: cheerHead 0.62s ease-in-out infinite; }
+
+@keyframes cheerHop {
+  0%, 100% { transform: translateY(calc(var(--vox) * 0.9)); }
+  45%      { transform: translateY(calc(var(--vox) * -2.2)); }
+}
+@keyframes cheerArmL {
+  0%, 100% { transform: rotateZ(150deg); }
+  45%      { transform: rotateZ(176deg); }
+}
+@keyframes cheerArmR {
+  0%, 100% { transform: rotateZ(-150deg); }
+  45%      { transform: rotateZ(-176deg); }
+}
+@keyframes cheerKnee {
+  0%, 100% { transform: rotateX(34deg); }
+  45%      { transform: rotateX(4deg); }
+}
+@keyframes cheerHead {
+  0%, 100% { transform: rotateX(6deg); }
+  45%      { transform: rotateX(-8deg); }
+}
+
+/* ---- GROOVE: a loose two-step with hips and arms ----
+   Extra keyframe stops (not just 0/50/100) are what smooth the arcs:
+   with only two stops a limb eases to a dead stop and reverses, which
+   reads as a robotic flip-flop. Intermediate stops keep it travelling
+   through the turnaround. */
+.avatar-rig[data-pose='dance'] .pivot-root { animation: danceBounce 0.55s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.avatar-rig[data-pose='dance'] .pivot-torso { animation: danceTorso 1.1s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='dance'] .pivot-neck { animation: danceHead 0.55s ease-in-out infinite; }
+.avatar-rig[data-pose='dance'] .pivot-shoulder-l { animation: danceArmL 1.1s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='dance'] .pivot-shoulder-r { animation: danceArmR 1.1s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='dance'] .pivot-elbow-l,
+.avatar-rig[data-pose='dance'] .pivot-elbow-r { animation: danceElbow 1.1s ease-in-out infinite; }
+.avatar-rig[data-pose='dance'] .pivot-hip-l { animation: danceLegL 1.1s ease-in-out infinite; }
+.avatar-rig[data-pose='dance'] .pivot-hip-r { animation: danceLegR 1.1s ease-in-out infinite; }
+.avatar-rig[data-pose='dance'] .pivot-knee-l { animation: danceKnee 1.1s ease-in-out infinite; }
+.avatar-rig[data-pose='dance'] .pivot-knee-r { animation: danceKnee 1.1s ease-in-out infinite -0.55s; }
+
+@keyframes danceBounce {
+  0%, 100% { transform: translateY(calc(var(--vox) * 0.75)); }
+  50%      { transform: translateY(calc(var(--vox) * -0.55)); }
+}
+@keyframes danceTorso {
+  0%, 100% { transform: rotateZ(-5deg) rotateY(-14deg); }
+  25%      { transform: rotateZ(-1deg) rotateY(0deg); }
+  50%      { transform: rotateZ(5deg) rotateY(14deg); }
+  75%      { transform: rotateZ(1deg) rotateY(0deg); }
+}
+@keyframes danceHead {
+  0%, 100% { transform: rotateZ(-6deg) rotateX(5deg); }
+  50%      { transform: rotateZ(6deg) rotateX(-3deg); }
+}
+@keyframes danceArmL {
+  0%, 100% { transform: rotateZ(26deg) rotateX(-28deg); }
+  25%      { transform: rotateZ(74deg) rotateX(-8deg); }
+  50%      { transform: rotateZ(116deg) rotateX(8deg); }
+  75%      { transform: rotateZ(72deg) rotateX(-10deg); }
+}
+@keyframes danceArmR {
+  0%, 100% { transform: rotateZ(-116deg) rotateX(8deg); }
+  25%      { transform: rotateZ(-72deg) rotateX(-10deg); }
+  50%      { transform: rotateZ(-26deg) rotateX(-28deg); }
+  75%      { transform: rotateZ(-74deg) rotateX(-8deg); }
+}
+@keyframes danceElbow {
+  0%, 100% { transform: rotateX(40deg); }
+  50%      { transform: rotateX(70deg); }
+}
+@keyframes danceLegL {
+  0%, 100% { transform: rotateX(4deg) rotateZ(-3deg); }
+  50%      { transform: rotateX(-6deg) rotateZ(-6deg); }
+}
+@keyframes danceLegR {
+  0%, 100% { transform: rotateX(-6deg) rotateZ(6deg); }
+  50%      { transform: rotateX(4deg) rotateZ(3deg); }
+}
+@keyframes danceKnee {
+  0%, 100% { transform: rotateX(10deg); }
+  50%      { transform: rotateX(38deg); }
+}
+
+/* ---- FLOSS: arms swing side to side, hips counter-swing ---- */
+.avatar-rig[data-pose='floss'] .pivot-root { animation: flossHips 0.46s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.avatar-rig[data-pose='floss'] .pivot-torso { animation: flossTorso 0.92s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='floss'] .pivot-neck { animation: flossHead 0.92s ease-in-out infinite; }
+.avatar-rig[data-pose='floss'] .pivot-shoulder-l { animation: flossArmL 0.92s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='floss'] .pivot-shoulder-r { animation: flossArmR 0.92s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='floss'] .pivot-elbow-l,
+.avatar-rig[data-pose='floss'] .pivot-elbow-r { transform: rotateX(12deg); }
+.avatar-rig[data-pose='floss'] .pivot-knee-l,
+.avatar-rig[data-pose='floss'] .pivot-knee-r { animation: flossKnee 0.46s ease-in-out infinite; }
+
+@keyframes flossHips {
+  0%, 100% { transform: translateY(0) rotateZ(-4deg); }
+  50%      { transform: translateY(calc(var(--vox) * -0.4)) rotateZ(4deg); }
+}
+@keyframes flossTorso {
+  0%, 100% { transform: rotateZ(7deg) rotateY(-8deg); }
+  50%      { transform: rotateZ(-7deg) rotateY(8deg); }
+}
+@keyframes flossHead {
+  0%, 100% { transform: rotateZ(-5deg); }
+  50%      { transform: rotateZ(5deg); }
+}
+/* Both arms travel together to one side, then the other — the swing
+   that gives the move its shape. */
+@keyframes flossArmL {
+  0%, 100% { transform: rotateZ(-28deg) rotateX(6deg); }
+  50%      { transform: rotateZ(38deg) rotateX(-6deg); }
+}
+@keyframes flossArmR {
+  0%, 100% { transform: rotateZ(-38deg) rotateX(-6deg); }
+  50%      { transform: rotateZ(28deg) rotateX(6deg); }
+}
+@keyframes flossKnee {
+  0%, 100% { transform: rotateX(8deg); }
+  50%      { transform: rotateX(22deg); }
+}
+
+/* ---- ROBOT: deliberately stepped. steps() is the whole joke —
+   the motion should NOT be smooth here. ---- */
+.avatar-rig[data-pose='robot'] .pivot-torso { animation: robotTorso 1.6s steps(4, end) infinite; }
+.avatar-rig[data-pose='robot'] .pivot-neck { animation: robotHead 1.6s steps(4, end) infinite; }
+.avatar-rig[data-pose='robot'] .pivot-shoulder-l { animation: robotArmL 1.6s steps(4, end) infinite; }
+.avatar-rig[data-pose='robot'] .pivot-shoulder-r { animation: robotArmR 1.6s steps(4, end) infinite; }
+.avatar-rig[data-pose='robot'] .pivot-elbow-l { animation: robotElbowL 1.6s steps(4, end) infinite; }
+.avatar-rig[data-pose='robot'] .pivot-elbow-r { animation: robotElbowR 1.6s steps(4, end) infinite; }
+.avatar-rig[data-pose='robot'] .pivot-root { animation: robotBob 0.8s steps(2, end) infinite; }
+
+@keyframes robotTorso {
+  0%   { transform: rotateY(-16deg); }
+  25%  { transform: rotateY(0deg); }
+  50%  { transform: rotateY(16deg); }
+  75%  { transform: rotateY(0deg); }
+  100% { transform: rotateY(-16deg); }
+}
+@keyframes robotHead {
+  0%   { transform: rotateY(18deg); }
+  25%  { transform: rotateY(0deg); }
+  50%  { transform: rotateY(-18deg); }
+  75%  { transform: rotateY(0deg); }
+  100% { transform: rotateY(18deg); }
+}
+@keyframes robotArmL {
+  0%   { transform: rotateZ(78deg); }
+  25%  { transform: rotateZ(20deg); }
+  50%  { transform: rotateZ(78deg); }
+  75%  { transform: rotateZ(20deg); }
+  100% { transform: rotateZ(78deg); }
+}
+@keyframes robotArmR {
+  0%   { transform: rotateZ(-20deg); }
+  25%  { transform: rotateZ(-78deg); }
+  50%  { transform: rotateZ(-20deg); }
+  75%  { transform: rotateZ(-78deg); }
+  100% { transform: rotateZ(-20deg); }
+}
+@keyframes robotElbowL {
+  0%   { transform: rotateX(84deg); }
+  25%  { transform: rotateX(10deg); }
+  50%  { transform: rotateX(84deg); }
+  75%  { transform: rotateX(10deg); }
+  100% { transform: rotateX(84deg); }
+}
+@keyframes robotElbowR {
+  0%   { transform: rotateX(10deg); }
+  25%  { transform: rotateX(84deg); }
+  50%  { transform: rotateX(10deg); }
+  75%  { transform: rotateX(84deg); }
+  100% { transform: rotateX(10deg); }
+}
+@keyframes robotBob {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(calc(var(--vox) * 0.5)); }
+  100% { transform: translateY(0); }
+}
+
+/* ---- CLAP: hands meet in front, with a little bounce ---- */
+.avatar-rig[data-pose='clap'] .pivot-root { animation: clapBob 0.44s ease-in-out infinite; }
+.avatar-rig[data-pose='clap'] .pivot-shoulder-l { animation: clapArmL 0.44s cubic-bezier(0.3, 0, 0.2, 1) infinite; }
+.avatar-rig[data-pose='clap'] .pivot-shoulder-r { animation: clapArmR 0.44s cubic-bezier(0.3, 0, 0.2, 1) infinite; }
+.avatar-rig[data-pose='clap'] .pivot-elbow-l,
+.avatar-rig[data-pose='clap'] .pivot-elbow-r { animation: clapElbow 0.44s cubic-bezier(0.3, 0, 0.2, 1) infinite; }
+.avatar-rig[data-pose='clap'] .pivot-neck { animation: clapHead 0.88s ease-in-out infinite; }
+
+@keyframes clapArmL {
+  0%, 100% { transform: rotateZ(52deg) rotateX(-46deg); }
+  55%      { transform: rotateZ(20deg) rotateX(-52deg); }
+}
+@keyframes clapArmR {
+  0%, 100% { transform: rotateZ(-52deg) rotateX(-46deg); }
+  55%      { transform: rotateZ(-20deg) rotateX(-52deg); }
+}
+@keyframes clapElbow {
+  0%, 100% { transform: rotateX(66deg); }
+  55%      { transform: rotateX(78deg); }
+}
+@keyframes clapBob {
+  0%, 100% { transform: translateY(calc(var(--vox) * 0.25)); }
+  55%      { transform: translateY(0); }
+}
+@keyframes clapHead {
+  0%, 100% { transform: rotateX(4deg) rotateZ(-2deg); }
+  50%      { transform: rotateX(-4deg) rotateZ(2deg); }
+}
+
+/* ---- JUMP: anticipation, launch, tuck, landing squash ----
+   The crouch before the launch and the squash on landing are what
+   sell weight; a plain up-down sine reads as floating. */
+.avatar-rig[data-pose='jump'] .pivot-root { animation: jumpRoot 0.95s cubic-bezier(0.3, 0, 0.35, 1) infinite; }
+.avatar-rig[data-pose='jump'] .pivot-knee-l,
+.avatar-rig[data-pose='jump'] .pivot-knee-r { animation: jumpKnee 0.95s cubic-bezier(0.3, 0, 0.35, 1) infinite; }
+.avatar-rig[data-pose='jump'] .pivot-hip-l,
+.avatar-rig[data-pose='jump'] .pivot-hip-r { animation: jumpHip 0.95s cubic-bezier(0.3, 0, 0.35, 1) infinite; }
+.avatar-rig[data-pose='jump'] .pivot-shoulder-l { animation: jumpArmL 0.95s cubic-bezier(0.3, 0, 0.35, 1) infinite; }
+.avatar-rig[data-pose='jump'] .pivot-shoulder-r { animation: jumpArmR 0.95s cubic-bezier(0.3, 0, 0.35, 1) infinite; }
+.avatar-rig[data-pose='jump'] .pivot-torso { animation: jumpTorso 0.95s ease-in-out infinite; }
+
+@keyframes jumpRoot {
+  0%    { transform: translateY(0); }
+  18%   { transform: translateY(calc(var(--vox) * 1.5)); }   /* anticipation crouch */
+  42%   { transform: translateY(calc(var(--vox) * -4.6)); }  /* peak               */
+  62%   { transform: translateY(calc(var(--vox) * -3.2)); }
+  80%   { transform: translateY(calc(var(--vox) * 1.7)); }   /* landing squash     */
+  100%  { transform: translateY(0); }
+}
+@keyframes jumpKnee {
+  0%    { transform: rotateX(10deg); }
+  18%   { transform: rotateX(56deg); }
+  42%   { transform: rotateX(30deg); }
+  62%   { transform: rotateX(46deg); }
+  80%   { transform: rotateX(58deg); }
+  100%  { transform: rotateX(10deg); }
+}
+@keyframes jumpHip {
+  0%, 100% { transform: rotateX(0deg); }
+  18%      { transform: rotateX(-16deg); }
+  42%      { transform: rotateX(12deg); }
+  80%      { transform: rotateX(-18deg); }
+}
+@keyframes jumpArmL {
+  0%    { transform: rotateZ(6deg) rotateX(0deg); }
+  18%   { transform: rotateZ(10deg) rotateX(42deg); }
+  42%   { transform: rotateZ(150deg) rotateX(0deg); }
+  70%   { transform: rotateZ(120deg) rotateX(0deg); }
+  100%  { transform: rotateZ(6deg) rotateX(0deg); }
+}
+@keyframes jumpArmR {
+  0%    { transform: rotateZ(-6deg) rotateX(0deg); }
+  18%   { transform: rotateZ(-10deg) rotateX(42deg); }
+  42%   { transform: rotateZ(-150deg) rotateX(0deg); }
+  70%   { transform: rotateZ(-120deg) rotateX(0deg); }
+  100%  { transform: rotateZ(-6deg) rotateX(0deg); }
+}
+@keyframes jumpTorso {
+  0%, 100% { transform: rotateX(0deg); }
+  18%      { transform: rotateX(10deg); }
+  42%      { transform: rotateX(-5deg); }
+  80%      { transform: rotateX(11deg); }
+}
+
+/* ---- DISCO: one arm points up and across, hips swing ---- */
+.avatar-rig[data-pose='disco'] .pivot-root { animation: discoHips 0.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.avatar-rig[data-pose='disco'] .pivot-torso { animation: discoTorso 1s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='disco'] .pivot-neck { animation: discoHead 1s ease-in-out infinite; }
+.avatar-rig[data-pose='disco'] .pivot-shoulder-r { animation: discoPoint 1s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='disco'] .pivot-shoulder-l { animation: discoArmL 1s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+.avatar-rig[data-pose='disco'] .pivot-elbow-r { animation: discoElbowR 1s ease-in-out infinite; }
+.avatar-rig[data-pose='disco'] .pivot-elbow-l { transform: rotateX(56deg); }
+.avatar-rig[data-pose='disco'] .pivot-knee-l,
+.avatar-rig[data-pose='disco'] .pivot-knee-r { animation: discoKnee 0.5s ease-in-out infinite; }
+
+@keyframes discoHips {
+  0%, 100% { transform: translateY(0) rotateZ(-4deg); }
+  50%      { transform: translateY(calc(var(--vox) * -0.5)) rotateZ(4deg); }
+}
+@keyframes discoTorso {
+  0%, 100% { transform: rotateY(-12deg) rotateZ(-4deg); }
+  50%      { transform: rotateY(12deg) rotateZ(4deg); }
+}
+@keyframes discoHead {
+  0%, 100% { transform: rotateY(-8deg) rotateX(-6deg); }
+  50%      { transform: rotateY(8deg) rotateX(2deg); }
+}
+@keyframes discoPoint {
+  0%, 100% { transform: rotateZ(-158deg) rotateX(-14deg); }  /* up and across */
+  50%      { transform: rotateZ(-44deg) rotateX(16deg); }    /* down and out  */
+}
+@keyframes discoArmL {
+  0%, 100% { transform: rotateZ(30deg) rotateX(10deg); }
+  50%      { transform: rotateZ(16deg) rotateX(-10deg); }
+}
+@keyframes discoElbowR {
+  0%, 100% { transform: rotateX(6deg); }
+  50%      { transform: rotateX(26deg); }
+}
+@keyframes discoKnee {
+  0%, 100% { transform: rotateX(10deg); }
+  50%      { transform: rotateX(26deg); }
+}
+
+/* ---- SPIN: full turn with arms out, rotated on the root so the
+   viewer's own drag-to-spin angle is preserved ---- */
+.avatar-rig[data-pose='spin'] .pivot-root { animation: spinRoot 1.5s linear infinite; }
+.avatar-rig[data-pose='spin'] .pivot-shoulder-l { animation: spinArmL 1.5s ease-in-out infinite; }
+.avatar-rig[data-pose='spin'] .pivot-shoulder-r { animation: spinArmR 1.5s ease-in-out infinite; }
+.avatar-rig[data-pose='spin'] .pivot-elbow-l,
+.avatar-rig[data-pose='spin'] .pivot-elbow-r { transform: rotateX(6deg); }
+.avatar-rig[data-pose='spin'] .pivot-knee-l,
+.avatar-rig[data-pose='spin'] .pivot-knee-r { animation: spinKnee 0.75s ease-in-out infinite; }
+.avatar-rig[data-pose='spin'] .pivot-neck { animation: spinHead 1.5s ease-in-out infinite; }
+
+@keyframes spinRoot {
+  0%   { transform: rotateY(0deg) translateY(0); }
+  50%  { transform: rotateY(180deg) translateY(calc(var(--vox) * -0.6)); }
+  100% { transform: rotateY(360deg) translateY(0); }
+}
+@keyframes spinArmL {
+  0%, 100% { transform: rotateZ(64deg) rotateX(-6deg); }
+  50%      { transform: rotateZ(88deg) rotateX(6deg); }
+}
+@keyframes spinArmR {
+  0%, 100% { transform: rotateZ(-64deg) rotateX(-6deg); }
+  50%      { transform: rotateZ(-88deg) rotateX(6deg); }
+}
+@keyframes spinKnee {
+  0%, 100% { transform: rotateX(8deg); }
+  50%      { transform: rotateX(24deg); }
+}
+@keyframes spinHead {
+  0%, 100% { transform: rotateZ(-4deg); }
+  50%      { transform: rotateZ(4deg); }
+}
+
+/* ---- FLEX: show off both arms, with a proud little bounce ---- */
+.avatar-rig[data-pose='flex'] .pivot-root { animation: flexBob 1.2s ease-in-out infinite; }
+.avatar-rig[data-pose='flex'] .pivot-torso { animation: flexTorso 2.4s ease-in-out infinite; }
+.avatar-rig[data-pose='flex'] .pivot-neck { animation: flexHead 2.4s ease-in-out infinite; }
+.avatar-rig[data-pose='flex'] .pivot-shoulder-l { animation: flexArmL 1.2s cubic-bezier(0.34, 1.4, 0.5, 1) infinite; }
+.avatar-rig[data-pose='flex'] .pivot-shoulder-r { animation: flexArmR 1.2s cubic-bezier(0.34, 1.4, 0.5, 1) infinite; }
+.avatar-rig[data-pose='flex'] .pivot-elbow-l,
+.avatar-rig[data-pose='flex'] .pivot-elbow-r { animation: flexElbow 1.2s cubic-bezier(0.34, 1.4, 0.5, 1) infinite; }
+
+@keyframes flexArmL {
+  0%, 100% { transform: rotateZ(74deg) rotateX(-16deg); }
+  50%      { transform: rotateZ(86deg) rotateX(-22deg); }
+}
+@keyframes flexArmR {
+  0%, 100% { transform: rotateZ(-74deg) rotateX(-16deg); }
+  50%      { transform: rotateZ(-86deg) rotateX(-22deg); }
+}
+@keyframes flexElbow {
+  0%, 100% { transform: rotateX(112deg); }
+  50%      { transform: rotateX(126deg); }
+}
+@keyframes flexBob {
+  0%, 100% { transform: translateY(calc(var(--vox) * 0.3)); }
+  50%      { transform: translateY(calc(var(--vox) * -0.3)); }
+}
+@keyframes flexTorso {
+  0%, 100% { transform: rotateY(-9deg); }
+  50%      { transform: rotateY(9deg); }
+}
+@keyframes flexHead {
+  0%, 100% { transform: rotateY(7deg) rotateZ(-3deg); }
+  50%      { transform: rotateY(-7deg) rotateZ(3deg); }
+}
 
 /* ---------- stage chrome ---------- */
 
@@ -185,12 +682,13 @@
 
 .pose-bar {
   position: absolute;
-  top: 14px;
-  left: 0;
-  right: 0;
+  top: 12px;
+  left: 10px;
+  right: 10px;
   display: flex;
   justify-content: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
   z-index: 2;
 }
 .pose-btn {
@@ -198,14 +696,45 @@
   border: 1px solid rgba(150, 220, 255, 0.35);
   color: #d6f0ff;
   font-weight: 700;
-  font-size: 0.8rem;
-  padding: 6px 14px;
+  font-size: 0.76rem;
+  line-height: 1.15;
+  padding: 5px 11px;
   border-radius: 999px;
   backdrop-filter: blur(4px);
-  transition: background 0.25s ease, transform 0.2s ease;
+  transition: background 0.25s ease, transform 0.2s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
-.pose-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
-.pose-btn.active { background: rgba(120, 220, 255, 0.85); color: #10203a; border-color: transparent; }
+.pose-btn .pose-kr {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  opacity: 0.72;
+}
+.pose-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+.pose-btn.active {
+  background: rgba(120, 220, 255, 0.9);
+  color: #10203a;
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+/* Locked emotes stay visible — seeing the move you haven't earned is
+   the motivation to finish the next unit. */
+.pose-btn.locked { opacity: 0.42; filter: grayscale(0.7); }
+.pose-btn.locked:hover { transform: none; }
+.pose-btn.shake { animation: poseShake 0.4s ease; }
+@keyframes poseShake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
+
+.emote-hint {
+  margin-top: 10px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  min-height: 1.3em;
+}
 
 /* ---------- customization panel ---------- */
 
@@ -296,6 +825,9 @@
 @media (prefers-reduced-motion: reduce) {
   .avatar-rig, .vox, .vox-face, .reveal, .unlock-bar span { transition: none; animation: none; }
   .avatar-stage::before, .avatar-stage::after { animation: none; }
+  /* Poses drive the joints, so they need silencing explicitly —
+     the rule above only covers the boxes, not the pivots. */
+  .joint-pivot, .face-bit { animation: none !important; transition: none; }
   .reveal { opacity: 1; transform: none; }
 }
 
