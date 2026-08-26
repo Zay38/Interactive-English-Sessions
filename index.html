@@ -6,8 +6,9 @@
 <title>Interactive English Sessions</title>
 <meta name="description" content="Zoom 화상 영어 수업을 위한 인터랙티브 학습 자료 — 문법, 어휘, 스피킹 액티비티" />
 <link rel="stylesheet" href="assets/css/main.css" />
+<link rel="stylesheet" href="assets/css/worldmap.css" />
 <style>
-  .hero { text-align: center; padding: 26px 10px 36px; }
+  .hero { text-align: center; padding: 26px 10px 26px; }
   .hero .emoji-row { font-size: 2.4rem; margin-bottom: 10px; }
   .level-section { margin-bottom: 40px; }
   .level-heading { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
@@ -35,248 +36,49 @@
   </div>
 
   <section class="hero">
-    <div class="emoji-row">🎧 📚 🎮 🗣️</div>
-    <h1>Zoom 영어 수업, 함께 클릭하며 배워요</h1>
-    <p class="kr muted">유닛을 눌러서 선생님과 화면을 공유하고, 직접 클릭하며 참여하는 인터랙티브 영어 수업이에요.<br/>Grammar · Vocabulary · Fun Speaking Activities · 세션당 약 20-25분</p>
-    <div style="margin-top:20px;">
+    <div class="emoji-row">🌍 🎧 🎮 🗣️</div>
+    <h1>영어로 세계 여행을 떠나요!</h1>
+    <p class="kr muted">지도에서 유닛을 눌러 시작해요. 하나를 끝낼 때마다 다음 나라로 이동해요.<br/>Grammar · Vocabulary · Fun Speaking Activities · 세션당 약 20-25분</p>
+    <div style="margin-top:18px;">
       <a class="btn secondary" href="character.html">🎮 My Character <span class="kr" style="font-size:0.8em;">나만의 캐릭터</span></a>
     </div>
   </section>
 
-  <section class="level-section">
-    <div class="level-heading">
-      <span class="level-pill beg">Beg</span>
-      <h2>Beginner</h2>
-      <span class="level-sub kr">1-2학년 눈높이</span>
+  <div class="wm-bar">
+    <div class="wm-legend">
+      <span><i class="lg-beg"></i> Beginner 초급</span>
+      <span><i class="lg-int"></i> Intermediate 중급</span>
+      <span><i class="lg-adv"></i> Advanced 고급</span>
+      <span><i class="lg-done"></i> Finished 완료</span>
     </div>
-    <p class="progress-summary" id="progressSummary"></p>
-    <div class="unit-grid">
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/family-feelings/index.html">
-        <span class="unit-emoji">👨‍👩‍👧‍👦</span>
-        <h3>Unit 1: My Family &amp; My Feelings</h3>
-        <p class="kr muted">가족과 감정을 영어로 소개해요 — This is my mom. I am happy!</p>
-        <div class="unit-tags">
-          <span class="tag grammar">This is / He is / She is / I am</span>
-          <span class="tag vocab">Vocab 16</span>
-          <span class="tag speak">Speaking x2</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/family-feelings/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/hello-friend/index.html">
-        <span class="unit-emoji">✨</span>
-        <h3>Unit 2: All About Me!</h3>
-        <p class="kr muted">나만의 영어 자기소개 만들기 — My name is / I am ___ years old / I like ~</p>
-        <div class="unit-tags">
-          <span class="tag grammar">My name is / I am ___ years old / I like</span>
-          <span class="tag vocab">Vocab 18</span>
-          <span class="tag speak">✨ My Introduction Card</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/hello-friend/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/my-body/index.html">
-        <span class="unit-emoji">👹</span>
-        <h3>Unit 3: My Body</h3>
-        <p class="kr muted">신체 부위 배우고 나만의 몬스터 만들기 — Touch your ___! / I have two ___.</p>
-        <div class="unit-tags">
-          <span class="tag grammar">Touch your ___! / I have two ___.</span>
-          <span class="tag vocab">Vocab 8</span>
-          <span class="tag speak">👹 My Monster Card</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/my-body/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/animals/index.html">
-        <span class="unit-emoji">🐶</span>
-        <h3>Unit 4: Animals</h3>
-        <p class="kr muted">동물 사파리와 나만의 반려동물 카드 — What's this? / I have a pet ___.</p>
-        <div class="unit-tags">
-          <span class="tag grammar">What's this? / I have a pet ___.</span>
-          <span class="tag vocab">Vocab 8</span>
-          <span class="tag speak">🐾 My Pet Card</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/animals/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/food-i-like/index.html">
-        <span class="unit-emoji">🍕</span>
-        <h3>Unit 5: Food I Like</h3>
-        <p class="kr muted">맛있는 음식과 나만의 점심 메뉴 — I want ___. / Do you like ___?</p>
-        <div class="unit-tags">
-          <span class="tag grammar">I want ___. / Do you like ___?</span>
-          <span class="tag vocab">Vocab 8</span>
-          <span class="tag speak">🍽️ My Lunch Menu</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/food-i-like/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/colors-shapes/index.html">
-        <span class="unit-emoji">🎨</span>
-        <h3>Unit 6: Colors &amp; Shapes</h3>
-        <p class="kr muted">색깔·모양과 나만의 최애 아이템 — What color/shape is it?</p>
-        <div class="unit-tags">
-          <span class="tag grammar">What color/shape is it? — It is ___.</span>
-          <span class="tag vocab">Vocab 8</span>
-          <span class="tag speak">🌟 My Favorite Thing</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/colors-shapes/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/my-clothes/index.html">
-        <span class="unit-emoji">👗</span>
-        <h3>Unit 7: My Clothes</h3>
-        <p class="kr muted">옷 단어와 나만의 코디 — What are you wearing? / I am wearing ___.</p>
-        <div class="unit-tags">
-          <span class="tag grammar">What are you wearing? / I am wearing ___.</span>
-          <span class="tag vocab">Vocab 8</span>
-          <span class="tag speak">👗 My Outfit</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/my-clothes/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/weather/index.html">
-        <span class="unit-emoji">☀️</span>
-        <h3>Unit 8: Weather</h3>
-        <p class="kr muted">날씨 단어와 나만의 날씨 리포트 — How's the weather? / It is ___.</p>
-        <div class="unit-tags">
-          <span class="tag grammar">How's the weather? / Do you like ___ days?</span>
-          <span class="tag vocab">Vocab 8</span>
-          <span class="tag speak">📺 My Weather Report</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/weather/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/my-house/index.html">
-        <span class="unit-emoji">🏠</span>
-        <h3>Unit 9: My House</h3>
-        <p class="kr muted">집의 방과 나만의 꿈의 집 — Where is the ___? / There is a ___.</p>
-        <div class="unit-tags">
-          <span class="tag grammar">Where is the ___? / There is a ___.</span>
-          <span class="tag vocab">Vocab 8</span>
-          <span class="tag speak">✨ My Dream House</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/my-house/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
-
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/my-classroom/index.html">
-        <span class="unit-emoji">🎒</span>
-        <h3>Unit 10: In My Classroom</h3>
-        <p class="kr muted">교실 물건과 나만의 필통 — What's in your bag? / Do you have a ___?</p>
-        <div class="unit-tags">
-          <span class="tag grammar">What's in your bag? / Do you have a ___?</span>
-          <span class="tag vocab">Vocab 8</span>
-          <span class="tag speak">✏️ My Pencil Case</span>
-        </div>
-      </a>
-      <a class="jp-mini-link" href="units/my-classroom/jeopardy.html" title="Review Game 복습 게임">🎯</a>
-      </div>
+    <div class="wm-progress" id="wmProgress"></div>
+    <div class="view-toggle" role="tablist">
+      <button type="button" id="viewMapBtn" class="active" role="tab">🗺️ Map 지도</button>
+      <button type="button" id="viewListBtn" role="tab">📋 List 목록</button>
     </div>
-  </section>
+  </div>
 
-  <section class="level-section">
-    <div class="level-heading">
-      <span class="level-pill int">Int</span>
-      <h2>Intermediate</h2>
-      <span class="level-sub kr">3-4학년 눈높이 · 대화 중심</span>
-    </div>
-    <p class="level-note">
-      <span class="level-note-en">💬 From here on, each unit is a real conversation. You say every line out loud — the app listens and checks it.</span>
-      <span class="level-note-kr kr">여기부터는 매 유닛이 실제 대화예요. 모든 문장을 소리 내어 말하면 앱이 듣고 확인해줘요.</span>
-    </p>
-    <div class="unit-grid">
-      <div class="unit-card-wrap">
-      <a class="unit-card" href="units/daily-routine/index.html">
-        <span class="unit-emoji">⏰</span>
-        <h3>Unit 11: My Daily Routine</h3>
-        <p class="kr muted">하루 일과를 영어 대화로 — Did you sleep well? / How was school?</p>
-        <div class="unit-tags">
-          <span class="tag speak">💬 3 Conversations</span>
-          <span class="tag grammar">Full-sentence replies</span>
-          <span class="tag vocab">🎤 Speak every line</span>
-        </div>
-      </a>
-      </div>
-      <div class="unit-card locked">
-        <span class="coming-soon-badge">SOON</span>
-        <span class="unit-emoji">🛒</span>
-        <h3>Unit 12: Let's Go Shopping</h3>
-        <p class="kr muted">시장에서 물건 사기 — How much is it? / I want to buy ~</p>
-      </div>
-    </div>
-  </section>
+  <div class="wm-wrap" id="mapView"></div>
+  <div id="listView" hidden></div>
 
-  <section class="level-section">
-    <div class="level-heading">
-      <span class="level-pill adv">Adv</span>
-      <h2>Advanced</h2>
-      <span class="level-sub kr">5-6학년 눈높이</span>
-    </div>
-    <div class="unit-grid">
-      <div class="unit-card locked">
-        <span class="coming-soon-badge">SOON</span>
-        <span class="unit-emoji">🌤️</span>
-        <h3>Unit 13: Seasons &amp; Plans</h3>
-        <p class="kr muted">계절과 미래 계획 말하기 — What's your favorite season? I'm going to~</p>
-      </div>
-      <div class="unit-card locked">
-        <span class="coming-soon-badge">SOON</span>
-        <span class="unit-emoji">🏀</span>
-        <h3>Unit 14: My Hobbies</h3>
-        <p class="kr muted">취미와 빈도부사 — I usually play soccer. Can you~?</p>
-      </div>
-      <div class="unit-card locked">
-        <span class="coming-soon-badge">SOON</span>
-        <span class="unit-emoji">🧳</span>
-        <h3>Unit 15: Yesterday's Adventure</h3>
-        <p class="kr muted">과거형 문장 — I went to the park. Did you have fun?</p>
-      </div>
-      <div class="unit-card locked">
-        <span class="coming-soon-badge">SOON</span>
-        <span class="unit-emoji">🗺️</span>
-        <h3>Unit 16: Let's Go There!</h3>
-        <p class="kr muted">길 안내와 장소 — Where is the ~? Turn left/right.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
+  <section class="card" style="margin-top:36px;">
     <h2>어떻게 사용하나요? How it works</h2>
     <div class="how-it-works">
       <div class="how-card">
-        <span class="step-emoji">🔗</span>
-        <p class="kr"><strong>1. 링크 공유</strong><br/>Zoom 화면 공유로 이 페이지를 함께 보거나, 학생에게 링크를 보내주세요.</p>
+        <span class="step-emoji">🗺️</span>
+        <p class="kr"><strong>1. 지도에서 고르기</strong><br/>지도의 번호를 눌러 유닛을 시작해요. 끝낸 유닛은 ✓로 표시돼요.</p>
       </div>
       <div class="how-card">
         <span class="step-emoji">🖱️</span>
         <p class="kr"><strong>2. 클릭하며 참여</strong><br/>이름을 적고, 카드와 게임을 클릭하며 포인트를 모아요.</p>
       </div>
       <div class="how-card">
-        <span class="step-emoji">🔊</span>
-        <p class="kr"><strong>3. 듣고 따라 말하기</strong><br/>🔊 버튼을 눌러 발음을 듣고, 큰 소리로 따라 말해요.</p>
+        <span class="step-emoji">🎤</span>
+        <p class="kr"><strong>3. 소리 내어 말하기</strong><br/>중급부터는 모든 문장을 직접 말하고, 앱이 듣고 확인해줘요.</p>
       </div>
       <div class="how-card">
-        <span class="step-emoji">🎤</span>
-        <p class="kr"><strong>4. 선생님과 대화</strong><br/>질문과 대답을 짝지어 배우고, 실제로 영어로 대화를 나눠요.</p>
+        <span class="step-emoji">🎮</span>
+        <p class="kr"><strong>4. 캐릭터 키우기</strong><br/>유닛을 완료하면 옷과 춤 동작이 하나씩 열려요.</p>
       </div>
     </div>
   </section>
@@ -287,30 +89,39 @@
 </div>
 
 <script src="assets/js/scoreboard.js"></script>
+<script src="assets/js/units-manifest.js"></script>
+<script src="assets/js/worldmap.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const progress = Scoreboard.getProgress();
-    let doneCount = 0;
-    document.querySelectorAll('.unit-card-wrap').forEach(wrap => {
-      const link = wrap.querySelector('a.unit-card');
-      const match = link && link.getAttribute('href').match(/units\/([^/]+)\//);
-      if (!match) return;
-      const entry = progress[match[1]];
-      if (!entry) return;
-      doneCount++;
-      link.classList.add('completed');
-      const badge = document.createElement('span');
-      badge.className = 'unit-done-badge';
-      badge.title = `Completed 완료 · best ${entry.bestPoints}pt`;
-      badge.textContent = '✅';
-      wrap.appendChild(badge);
-    });
-    const summary = document.getElementById('progressSummary');
-    if (summary && doneCount) {
-      const total = document.querySelectorAll('.unit-card-wrap').length;
-      summary.innerHTML = `🌟 You've finished <strong>${doneCount} / ${total}</strong> Beginner units!<br><span class="kr">지금까지 ${total}개 중 ${doneCount}개를 완료했어요!</span>`;
-      summary.classList.add('show');
+    const mapView = document.getElementById('mapView');
+    const listView = document.getElementById('listView');
+    const mapBtn = document.getElementById('viewMapBtn');
+    const listBtn = document.getElementById('viewListBtn');
+
+    const stats = WorldMap.render(mapView);
+    WorldMap.renderList(listView);
+
+    const prog = document.getElementById('wmProgress');
+    prog.innerHTML = stats.current
+      ? `🚩 ${stats.done} / ${stats.total} units finished<span class="kr">다음: Unit ${stats.current.n} ${stats.current.titleKr}</span>`
+      : `🏆 All ${stats.total} units finished!<span class="kr">전부 완료했어요!</span>`;
+
+    /* Teachers scanning the whole course want a list; students want the
+       map. The choice is remembered so neither has to re-pick it. */
+    function setView(which) {
+      const isMap = which === 'map';
+      document.querySelector('.wm-wrap').hidden = !isMap;
+      listView.hidden = isMap;
+      mapBtn.classList.toggle('active', isMap);
+      listBtn.classList.toggle('active', !isMap);
+      try { localStorage.setItem('ies-home-view', which); } catch (e) {}
     }
+    mapBtn.addEventListener('click', () => setView('map'));
+    listBtn.addEventListener('click', () => setView('list'));
+
+    let saved = 'map';
+    try { saved = localStorage.getItem('ies-home-view') || 'map'; } catch (e) {}
+    setView(saved);
   });
 </script>
 </body>
