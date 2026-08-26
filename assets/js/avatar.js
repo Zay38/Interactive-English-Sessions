@@ -94,6 +94,36 @@ const Avatar = (() => {
 
   const DEFAULTS = { skin: 'light', hair: 'black', shirt: 'blue', pants: 'denim', hat: 'none' };
 
+  /* ---------------- emotes ----------------
+     Every emote past the first three is earned by finishing a unit, so
+     the reward for learning is a new move rather than a badge. Order is
+     the unit order, so a student always unlocks the next one along. */
+  const EMOTES = [
+    { id: 'idle',  labelEn: 'Stand',  labelKr: '서기',     emoji: '🧍', unlockUnit: null },
+    { id: 'wave',  labelEn: 'Wave',   labelKr: '인사',     emoji: '👋', unlockUnit: null },
+    { id: 'walk',  labelEn: 'Walk',   labelKr: '걷기',     emoji: '🚶', unlockUnit: null },
+    { id: 'cheer', labelEn: 'Cheer',  labelKr: '환호',     emoji: '🎉', unlockUnit: 'family-feelings' },
+    { id: 'dance', labelEn: 'Groove', labelKr: '춤추기',   emoji: '🕺', unlockUnit: 'hello-friend' },
+    { id: 'floss', labelEn: 'Floss',  labelKr: '플로스',   emoji: '💃', unlockUnit: 'my-body' },
+    { id: 'robot', labelEn: 'Robot',  labelKr: '로봇춤',   emoji: '🤖', unlockUnit: 'animals' },
+    { id: 'clap',  labelEn: 'Clap',   labelKr: '박수',     emoji: '👏', unlockUnit: 'food-i-like' },
+    { id: 'jump',  labelEn: 'Jump',   labelKr: '점프',     emoji: '⭐', unlockUnit: 'colors-shapes' },
+    { id: 'disco', labelEn: 'Disco',  labelKr: '디스코',   emoji: '🪩', unlockUnit: 'my-clothes' },
+    { id: 'spin',  labelEn: 'Spin',   labelKr: '회전',     emoji: '🌀', unlockUnit: 'weather' },
+    { id: 'flex',  labelEn: 'Flex',   labelKr: '자랑하기', emoji: '💪', unlockUnit: 'my-house' },
+  ];
+
+  function isEmoteUnlocked(emote, progress) {
+    return !emote.unlockUnit || !!progress[emote.unlockUnit];
+  }
+
+  function emoteStats(progress) {
+    return {
+      total: EMOTES.length,
+      unlocked: EMOTES.filter(e => isEmoteUnlocked(e, progress)).length,
+    };
+  }
+
   /* ---------------- persistence ---------------- */
 
   function load() {
@@ -401,8 +431,9 @@ const Avatar = (() => {
   }
 
   return {
-    CATALOG, DEFAULTS,
+    CATALOG, DEFAULTS, EMOTES,
     load, save, findOption, isUnlocked, optionUnlockUnit, unlockStats,
+    isEmoteUnlocked, emoteStats,
     buildRig, applyConfig, enableDragRotate, setPose,
   };
 })();
