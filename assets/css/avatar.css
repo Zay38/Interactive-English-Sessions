@@ -674,7 +674,7 @@
   bottom: 14px;
   text-align: center;
   color: rgba(210, 240, 255, 0.75);
-  font-size: 0.8rem;
+  font-size: var(--fs-label);
   font-weight: 600;
   pointer-events: none;
   z-index: 2;
@@ -696,7 +696,7 @@
   border: 1px solid rgba(150, 220, 255, 0.35);
   color: #d6f0ff;
   font-weight: 700;
-  font-size: 0.76rem;
+  font-size: var(--fs-min);
   line-height: 1.15;
   padding: 5px 11px;
   border-radius: 999px;
@@ -705,7 +705,7 @@
 }
 .pose-btn .pose-kr {
   display: block;
-  font-size: 0.62rem;
+  font-size: var(--fs-min);
   font-weight: 600;
   opacity: 0.72;
 }
@@ -731,7 +731,7 @@
   margin-top: 10px;
   text-align: center;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: var(--fs-kr);
   color: var(--color-ink-soft);
   min-height: 1.3em;
 }
@@ -745,7 +745,7 @@
   font-weight: 800;
   margin-bottom: 10px;
 }
-.wardrobe-label .kr { font-size: 0.8rem; font-weight: 600; color: var(--color-ink-soft); margin-left: 6px; }
+.wardrobe-label .kr { font-size: var(--fs-label); font-weight: 600; color: var(--color-ink-soft); margin-left: 6px; }
 
 .swatch-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .swatch {
@@ -758,7 +758,7 @@
   background: var(--color-bg-alt);
   display: grid;
   place-items: center;
-  font-size: 0.7rem;
+  font-size: var(--fs-min);
   font-weight: 700;
   color: var(--color-ink-soft);
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease;
@@ -783,7 +783,7 @@
 
 .unlock-hint {
   margin-top: 8px;
-  font-size: 0.82rem;
+  font-size: var(--fs-label);
   color: var(--color-ink-soft);
   min-height: 1.2em;
 }
@@ -797,7 +797,7 @@
   font-family: var(--font-display);
   font-weight: 700;
 }
-.unlock-meter .kr { display: block; font-size: 0.82rem; font-weight: 600; color: var(--color-ink-soft); margin-top: 4px; }
+.unlock-meter .kr { display: block; font-size: var(--fs-label); font-weight: 600; color: var(--color-ink-soft); margin-top: 4px; }
 .unlock-bar {
   margin-top: 10px;
   height: 12px;

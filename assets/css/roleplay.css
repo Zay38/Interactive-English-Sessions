@@ -22,7 +22,7 @@
 }
 .scene-setting-emoji { font-size: 2.4rem; line-height: 1; }
 .scene-setting-en { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; }
-.scene-setting-kr { color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 2px; }
+.scene-setting-kr { color: var(--color-ink-soft); font-size: var(--fs-kr); margin-top: 2px; }
 
 /* ---------- chat log ---------- */
 
@@ -98,19 +98,19 @@
 .chat-name {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.75rem;
+  font-size: var(--fs-min);
   color: var(--color-primary-dark);
   margin-bottom: 3px;
 }
 .chat-row.student .chat-name { color: var(--color-accent-dark); text-align: right; }
 .chat-en {
-  font-family: var(--font-display);
+  font-family: var(--font-read);
   font-weight: 800;
-  font-size: 1.08rem;
+  font-size: var(--fs-read);
   line-height: 1.4;
   color: var(--color-ink);
 }
-.chat-kr { color: var(--color-ink-soft); font-size: 0.84rem; margin-top: 3px; }
+.chat-kr { color: var(--color-ink-soft); font-size: var(--fs-label); margin-top: 3px; }
 .chat-row.student .chat-en,
 .chat-row.student .chat-kr { text-align: right; }
 .chat-replay { margin-top: 6px; }
@@ -129,7 +129,7 @@
   font-weight: 800;
   color: var(--color-purple);
 }
-.chat-prompt .instr-kr { display: block; font-size: 0.82rem; color: var(--color-ink-soft); margin-top: 2px; }
+.chat-prompt .instr-kr { display: block; font-size: var(--fs-label); color: var(--color-ink-soft); margin-top: 2px; }
 
 .reply-grid {
   display: grid;
@@ -154,12 +154,12 @@
 .reply-btn:disabled { opacity: 0.45; }
 .reply-en {
   display: block;
-  font-family: var(--font-display);
+  font-family: var(--font-read);
   font-weight: 800;
-  font-size: 1.02rem;
+  font-size: var(--fs-body);
   color: var(--color-ink);
 }
-.reply-kr { display: block; font-size: 0.82rem; color: var(--color-ink-soft); margin-top: 3px; }
+.reply-kr { display: block; font-size: var(--fs-label); color: var(--color-ink-soft); margin-top: 3px; }
 
 /* ---------- scene wrap-up ---------- */
 
@@ -171,7 +171,7 @@
   text-align: center;
 }
 .scene-wrapup-en { font-family: var(--font-display); font-weight: 800; color: #2e9e63; }
-.scene-wrapup-kr { color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 4px; }
+.scene-wrapup-kr { color: var(--color-ink-soft); font-size: var(--fs-kr); margin-top: 4px; }
 
 /* ---------- finish recap ---------- */
 
@@ -181,8 +181,8 @@
   padding: 10px 14px;
   margin-bottom: 8px;
 }
-.said-line-en { font-family: var(--font-display); font-weight: 800; font-size: 1rem; }
-.said-line-kr { color: var(--color-ink-soft); font-size: 0.82rem; margin-top: 2px; }
+.said-line-en { font-family: var(--font-read); font-weight: 800; font-size: var(--fs-body); }
+.said-line-kr { color: var(--color-ink-soft); font-size: var(--fs-label); margin-top: 2px; }
 
 /* ---------- unsupported-browser notice ---------- */
 
