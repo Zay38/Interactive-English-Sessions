@@ -36,6 +36,51 @@ const WorldMap = (() => {
   const px = u => (u.mapX / 100) * VB.w;
   const py = u => (u.mapY / 100) * VB.h;
 
+  const reduceMotion = () =>
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- camera ----------------
+     Tapping a pin flies the map toward it rather than just popping a
+     card up, so choosing a unit feels like travelling to the place.
+     The SVG viewBox IS the camera: animating its four numbers pans and
+     zooms in one go, and because it is vector the whole thing stays
+     sharp at any zoom. */
+
+  const FULL = [0, 0, VB.w, VB.h];
+  const easeInOut = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+  /* bias: where the target sits vertically in frame. The detail card
+     occupies the bottom of the map, so parking the pin at ~1/3 height
+     keeps it visible above the card instead of hidden behind it. */
+  function frameFor(cx, cy, zoom, bias = 0.20) {
+    const w = VB.w / zoom;
+    const h = VB.h / zoom;
+    // keep the camera inside the map so we never fly off into blank space
+    const x = Math.max(0, Math.min(VB.w - w, cx - w / 2));
+    const y = Math.max(0, Math.min(VB.h - h, cy - h * bias));
+    return [x, y, w, h];
+  }
+
+  function flyTo(svg, to, ms, onDone) {
+    const from = (svg.getAttribute('viewBox') || FULL.join(' ')).split(/[\s,]+/).map(Number);
+    if (reduceMotion() || ms === 0) {
+      svg.setAttribute('viewBox', to.join(' '));
+      if (onDone) onDone();
+      return;
+    }
+    // Cancel any flight already in progress, otherwise two tweens fight
+    // over the same attribute and the camera jitters.
+    if (svg._flight) cancelAnimationFrame(svg._flight);
+    const t0 = performance.now();
+    (function step(now) {
+      const t = Math.min(1, (now - t0) / ms);
+      const e = easeInOut(t);
+      svg.setAttribute('viewBox', from.map((f, i) => f + (to[i] - f) * e).join(' '));
+      if (t < 1) svg._flight = requestAnimationFrame(step);
+      else { svg._flight = null; if (onDone) onDone(); }
+    })(t0);
+  }
+
   function render(mount) {
     const progress = Scoreboard.getProgress();
     const done = u => !!progress[u.id];
@@ -91,14 +136,17 @@ const WorldMap = (() => {
       label.textContent = done(u) ? '✓' : u.n;
       g.appendChild(label);
 
-      const open = (e) => { e.stopPropagation(); showCard(u, done(u)); };
+      const open = (e) => { e.stopPropagation(); zoomToUnit(u, done(u)); };
       g.addEventListener('click', open);
-      g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') open(e); });
+      g.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); }
+      });
       svg.appendChild(g);
     });
 
     mount.innerHTML = '';
     mount.appendChild(svg);
+    svg.setAttribute('viewBox', FULL.join(' '));
 
     /* ---- detail card ---- */
     const card = document.createElement('div');
@@ -106,24 +154,63 @@ const WorldMap = (() => {
     card.id = 'wmCard';
     mount.appendChild(card);
 
+    let zoomed = null;   // the unit we are currently flown in on
+
+    /* Step 1 of the journey: fly the camera to the pin, then show its card. */
+    function zoomToUnit(u, isDone) {
+      zoomed = u;
+      mount.classList.add('is-zoomed');
+      card.classList.remove('show');
+      flyTo(svg, frameFor(px(u), py(u), 3.2), 620, () => showCard(u, isDone));
+    }
+
+    function zoomOut() {
+      zoomed = null;
+      mount.classList.remove('is-zoomed');
+      card.classList.remove('show');
+      flyTo(svg, FULL, 520);
+    }
+
+    /* Step 2: leaving for the unit. Push the camera the rest of the way in
+       and fade the map out, so the map hands off to the lesson instead of
+       cutting to it. Navigation is on a timer rather than the tween's
+       callback so a slow frame can never strand the student here. */
+    function zoomThroughTo(href, u) {
+      if (reduceMotion()) { window.location.href = href; return; }
+      mount.classList.add('is-launching');
+      card.classList.remove('show');
+      flyTo(svg, frameFor(px(u), py(u), 9), 520);
+      setTimeout(() => { window.location.href = href; }, 470);
+    }
+
     function showCard(u, isDone) {
       const tier = TIERS[u.tier];
       card.innerHTML = `
         <button class="wm-card-close" type="button" aria-label="Close">✕</button>
         <div class="wm-card-emoji">${u.emoji}</div>
-        <div class="wm-card-tier wm-tier-${u.tier}">${tier.labelEn} · ${tier.labelKr}</div>
-        <h3>Unit ${u.n}: ${u.titleEn}</h3>
-        <p class="kr muted">${u.titleKr}</p>
-        ${isDone ? '<p class="wm-card-done">✅ Finished! 완료했어요</p>' : ''}
+        <div class="wm-card-head">
+          <div class="wm-card-tier wm-tier-${u.tier}">${tier.labelEn} · ${tier.labelKr}</div>
+          <h3>Unit ${u.n}: ${u.titleEn}</h3>
+          <p class="kr muted">${u.titleKr}</p>
+          ${isDone ? '<p class="wm-card-done">✅ Finished! 완료했어요</p>' : ''}
+        </div>
         <div class="wm-card-actions">
-          <a class="btn small" href="${u.href}">${isDone ? '↺ Play Again 다시 하기' : '▶ Start 시작하기'}</a>
-          ${u.game ? `<a class="btn secondary small" href="${u.game}">🎯 Review Game 복습 게임</a>` : ''}
+          <a class="btn small" href="${u.href}" data-launch>${isDone ? '↺ Play Again 다시 하기' : '▶ Start 시작하기'}</a>
+          ${u.game ? `<a class="btn secondary small" href="${u.game}" data-launch>🎯 Review Game 복습 게임</a>` : ''}
         </div>`;
       card.classList.add('show');
-      card.querySelector('.wm-card-close').addEventListener('click', () => card.classList.remove('show'));
+      card.querySelector('.wm-card-close').addEventListener('click', zoomOut);
+      card.querySelectorAll('[data-launch]').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          zoomThroughTo(a.getAttribute('href'), u);
+        });
+      });
     }
 
-    svg.addEventListener('click', () => card.classList.remove('show'));
+    // tapping the ocean flies back out
+    svg.addEventListener('click', () => { if (zoomed) zoomOut(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && zoomed) zoomOut(); });
 
     return { done: UNITS.filter(done).length, total: UNITS.length, current };
   }

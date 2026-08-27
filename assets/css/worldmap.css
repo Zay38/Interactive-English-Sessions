@@ -62,7 +62,7 @@
 
 .wm-pin:hover .wm-dot,
 .wm-pin:focus-visible .wm-dot { transform: scale(1.22); }
-.wm-pin:focus-visible { outline: none; }
+.wm-pin:focus, .wm-pin:focus-visible { outline: none; }
 .wm-pin:focus-visible .wm-dot { stroke: var(--color-accent-dark); }
 
 .wm-pin.is-done .wm-dot { fill: #2e9e63; }
@@ -81,24 +81,37 @@
 
 /* ---------- detail card ---------- */
 
+/* Deliberately compact. After the type sizes went up this card grew to
+   fill ~70% of the map, which meant flying the camera to a pin only to
+   bury it. Laying the emoji beside the text instead of above it, and
+   keeping the buttons on one row, holds it to roughly a third. */
 .wm-card {
   position: absolute;
   left: 50%;
-  bottom: 16px;
+  bottom: 14px;
   transform: translate(-50%, 130%);
-  width: min(420px, calc(100% - 28px));
+  width: min(480px, calc(100% - 24px));
   background: var(--color-card);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-pop);
-  padding: 20px 22px 22px;
-  text-align: center;
+  padding: 14px 18px 16px;
+  text-align: left;
   opacity: 0;
   pointer-events: none;
   transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
   z-index: 3;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'emoji head'
+    'actions actions';
+  column-gap: 14px;
+  align-items: center;
 }
 .wm-card.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
-.wm-card h3 { margin-top: 4px; }
+.wm-card > .wm-card-head { grid-area: head; min-width: 0; }
+.wm-card h3 { margin: 2px 0 0; font-size: var(--fs-heading); line-height: 1.2; }
+.wm-card p { margin: 2px 0 0; }
 .wm-card-close {
   position: absolute;
   top: 10px;
@@ -107,27 +120,29 @@
   color: var(--color-ink-soft);
   background: none;
 }
-.wm-card-emoji { font-size: 2.6rem; line-height: 1; }
+.wm-card-emoji { grid-area: emoji; font-size: 2.1rem; line-height: 1; }
 .wm-card-tier {
   display: inline-block;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--fs-min);
-  padding: 3px 12px;
+  padding: 2px 10px;
   border-radius: 999px;
-  margin: 8px 0 2px;
+  margin: 0;
 }
 .wm-tier-beg { background: #eafbf1; color: #2e9e63; }
 .wm-tier-int { background: #e6f4fd; color: #1f7fb0; }
 .wm-tier-adv { background: #f4edff; color: #7a4de0; }
-.wm-card-done { color: #2e9e63; font-weight: 800; margin-top: 6px; }
+.wm-card-done { color: #2e9e63; font-weight: 800; margin-top: 4px; }
 .wm-card-actions {
+  grid-area: actions;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 14px;
+  margin-top: 12px;
 }
+.wm-card-done { font-size: var(--fs-label); }
 
 /* ---------- legend + progress ---------- */
 
@@ -200,4 +215,40 @@
 @media (prefers-reduced-motion: reduce) {
   .wm-halo { animation: none; }
   .wm-card, .wm-dot { transition: none; }
+}
+
+/* ---------- flying into a unit ----------
+   The camera itself is the SVG viewBox (see worldmap.js); these rules
+   are the surrounding polish: a hint that you are zoomed in, and the
+   hand-off fade when the map launches you into the lesson. */
+
+.wm-wrap.is-zoomed .wm-route { opacity: 0.35; }
+.wm-wrap.is-zoomed .wm-pin:not(.is-current) .wm-dot { opacity: 0.9; }
+
+/* a soft vignette while zoomed, so the focused pin reads as "here" */
+.wm-wrap.is-zoomed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 45%, transparent 38%, rgba(12, 45, 70, 0.24) 100%);
+  animation: wmVignette 0.5s ease forwards;
+  z-index: 1;
+}
+@keyframes wmVignette { from { opacity: 0; } to { opacity: 1; } }
+
+/* launching: push in and hand off to the lesson page */
+.wm-wrap.is-launching .wm-svg {
+  animation: wmLaunch 0.5s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+@keyframes wmLaunch {
+  from { opacity: 1; filter: blur(0); }
+  to   { opacity: 0; filter: blur(6px); }
+}
+
+.wm-pin { transition: opacity 0.3s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wm-wrap.is-zoomed::after { animation: none; }
+  .wm-wrap.is-launching .wm-svg { animation: none; }
 }
