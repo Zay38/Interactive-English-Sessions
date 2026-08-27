@@ -177,6 +177,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   border-radius: 999px;
   background: var(--color-primary);
   color: #fff;
+  text-decoration: none;
   box-shadow: var(--shadow-pop);
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
   user-select: none;
@@ -1268,4 +1269,51 @@ footer.site-footer {
   font-family: var(--font-kr);
   font-size: var(--fs-kr);
   line-height: 1.55;
+}
+
+/* ============================================================
+   TAP FEEDBACK
+   Paired with tap-feedback.js. Every tappable thing squashes on
+   press and throws a ripple from the touch point, so a young
+   student can always see that their click landed — and where.
+   ============================================================ */
+
+.tap-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.tap-ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.25);
+  background: radial-gradient(circle,
+    rgba(255, 209, 102, 0.55) 0%,
+    rgba(255, 138, 92, 0.35) 45%,
+    rgba(255, 138, 92, 0) 70%);
+  animation: tapRipple 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes tapRipple {
+  from { transform: translate(-50%, -50%) scale(0.25); opacity: 0.9; }
+  to   { transform: translate(-50%, -50%) scale(1.9);  opacity: 0; }
+}
+
+/* the squash. Kept small so it reads as tactile, not bouncy. */
+.is-pressed {
+  transform: scale(0.955) !important;
+  transition: transform 0.09s ease-out !important;
+}
+/* Elements whose resting state is already transformed need the press to
+   compose with it rather than replace it. */
+.unit-card.is-pressed { transform: translateY(-2px) scale(0.975) !important; }
+.flashcard.is-pressed { transform: scale(0.97) !important; }
+.wm-pin.is-pressed .wm-dot { transform: scale(1.32); }
+.jp-cell.is-pressed { transform: translateY(1px) scale(0.97) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tap-ripple { display: none; }
+  .is-pressed { transform: none !important; }
 }
