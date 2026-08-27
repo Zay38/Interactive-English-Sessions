@@ -3,7 +3,7 @@
    Kid-friendly, high-contrast, big click targets, playful motion.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Noto+Sans+KR:wght@400;600;800&family=Nunito:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Lexend:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;600;800&family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
   --color-bg: #fef9f0;
@@ -31,8 +31,37 @@
   --radius-md: 18px;
   --radius-sm: 12px;
 
+  /* ---------- typography ----------
+     Three fonts, three jobs, so a student can tell at a glance what
+     kind of text they are looking at:
+
+       --font-display  titles and headings. Rounded and playful.
+       --font-read     the ENGLISH they are meant to read and say out
+                       loud. Lexend is designed to raise reading
+                       proficiency in children, so it carries the text
+                       that matters most.
+       --font-kr       the Korean gloss. A different face entirely, so
+                       it never gets mistaken for the English line.
+     */
   --font-display: 'Baloo 2', 'Noto Sans KR', sans-serif;
+  --font-read: 'Lexend', 'Noto Sans KR', sans-serif;
   --font-body: 'Nunito', 'Noto Sans KR', sans-serif;
+  --font-kr: 'Noto Sans KR', sans-serif;
+
+  /* Fluid scale. Every size grows with the viewport, and the floor of
+     each clamp is the smallest we allow — a student reported the old
+     text (down to 10px) was unreadable, so nothing here bottoms out
+     below ~14px. */
+  --fs-hero:    clamp(1.75rem, 1.30rem + 2.1vw, 2.60rem);
+  --fs-title:   clamp(1.40rem, 1.15rem + 1.2vw, 1.90rem);
+  --fs-heading: clamp(1.20rem, 1.05rem + 0.7vw, 1.50rem);
+  /* the English line the student reads aloud — deliberately the
+     largest body text on the page */
+  --fs-read:    clamp(1.25rem, 1.08rem + 0.8vw, 1.60rem);
+  --fs-body:    clamp(1.05rem, 1.00rem + 0.3vw, 1.18rem);
+  --fs-kr:      clamp(0.98rem, 0.94rem + 0.25vw, 1.10rem);
+  --fs-label:   clamp(0.92rem, 0.88rem + 0.2vw, 1.02rem);
+  --fs-min:     clamp(0.88rem, 0.86rem + 0.15vw, 0.96rem);
 }
 
 * { box-sizing: border-box; }
@@ -43,6 +72,8 @@ html, body {
   background: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.6;
   min-height: 100vh;
   scroll-behavior: smooth;
 }
@@ -58,6 +89,9 @@ h1, h2, h3, h4, .display {
   line-height: 1.25;
   margin: 0 0 0.4em;
 }
+h1 { font-size: var(--fs-hero); }
+h2 { font-size: var(--fs-title); }
+h3 { font-size: var(--fs-heading); }
 
 p { line-height: 1.6; margin: 0 0 1em; }
 
@@ -65,6 +99,7 @@ a { color: var(--color-secondary-dark); }
 
 button {
   font-family: var(--font-body);
+  font-size: var(--fs-body);
   cursor: pointer;
   border: none;
   outline-offset: 3px;
@@ -74,7 +109,22 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   outline: 3px solid var(--color-secondary-dark);
 }
 
-.kr { font-family: 'Noto Sans KR', sans-serif; }
+/* Korean gloss: its own face and a slightly lighter colour so it reads
+   as support for the English line rather than competing with it. */
+.kr {
+  font-family: var(--font-kr);
+  font-size: var(--fs-kr);
+  line-height: 1.55;
+}
+
+/* The English a student is meant to read and say. */
+.read-en {
+  font-family: var(--font-read);
+  font-size: var(--fs-read);
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0.005em;
+}
 
 /* ---------- layout shells ---------- */
 
@@ -149,7 +199,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   background: var(--color-green);
   box-shadow: 0 14px 30px rgba(107, 207, 156, 0.35);
 }
-.btn.small { padding: 8px 16px; font-size: 0.9rem; }
+.btn.small { padding: 8px 16px; font-size: var(--fs-kr); }
 
 .icon-btn {
   display: inline-grid;
@@ -204,7 +254,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   margin-top: 12px;
 }
 .tag {
-  font-size: 0.78rem;
+  font-size: var(--fs-min);
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 999px;
@@ -225,7 +275,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   margin-bottom: 18px;
 }
 .level-note-en { display: block; font-weight: 700; color: var(--color-ink); }
-.level-note-kr { display: block; font-size: 0.85rem; color: var(--color-ink-soft); margin-top: 3px; }
+.level-note-kr { display: block; font-size: var(--fs-kr); color: var(--color-ink-soft); margin-top: 3px; }
 
 .unit-card-wrap { position: relative; }
 .jp-mini-link {
@@ -275,7 +325,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   text-align: center;
 }
 .progress-summary.show { display: block; }
-.progress-summary .kr { font-size: 0.85rem; font-weight: 600; color: var(--color-ink-soft); }
+.progress-summary .kr { font-size: var(--fs-kr); font-weight: 600; color: var(--color-ink-soft); }
 
 .unit-card.locked { opacity: 0.55; cursor: default; }
 .unit-card.locked:hover { transform: none; border-color: transparent; box-shadow: var(--shadow-soft); }
@@ -286,7 +336,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   transform: rotate(35deg);
   background: var(--color-purple);
   color: #fff;
-  font-size: 0.7rem;
+  font-size: var(--fs-min);
   font-weight: 800;
   padding: 4px 40px;
 }
@@ -324,7 +374,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 .step-label {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: var(--fs-kr);
   color: var(--color-ink-soft);
   white-space: nowrap;
 }
@@ -347,7 +397,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   display: inline-block;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: var(--fs-kr);
   letter-spacing: 0.03em;
   color: var(--color-primary-dark);
   background: #fff0e3;
@@ -372,7 +422,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   display: block;
   font-weight: 600;
   color: var(--color-ink-soft);
-  font-size: 0.85rem;
+  font-size: var(--fs-kr);
   margin-top: 4px;
 }
 
@@ -401,7 +451,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   text-align: center;
 }
 .pattern-box .pattern-en { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--color-primary-dark); }
-.pattern-box .pattern-kr { color: var(--color-ink-soft); font-weight: 700; margin-top: 6px; font-size: 0.9rem; }
+.pattern-box .pattern-kr { color: var(--color-ink-soft); font-weight: 700; margin-top: 6px; font-size: var(--fs-kr); }
 
 .checkin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px; }
 .checkin-btn {
@@ -411,19 +461,19 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 }
 .checkin-btn:hover { transform: translateY(-3px); border-color: var(--color-accent-dark); }
 .checkin-btn.picked { border-color: var(--color-primary); background: #fff0e3; }
-.checkin-btn .label-en { display: block; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-top: 6px; }
-.checkin-btn .label { display: block; font-weight: 600; font-size: 0.78rem; color: var(--color-ink-soft); margin-top: 2px; }
+.checkin-btn .label-en { display: block; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-kr); margin-top: 6px; }
+.checkin-btn .label { display: block; font-weight: 600; font-size: var(--fs-min); color: var(--color-ink-soft); margin-top: 2px; }
 
 .welcome-hero { position: relative; overflow: hidden; text-align: center; padding: 30px 10px 10px; border-radius: var(--radius-lg); }
 .welcome-hero .emoji-row { font-size: 3rem; margin-bottom: 10px; }
 
 .subtitle-en { display: block; font-weight: 700; color: var(--color-ink); }
-.subtitle-kr { display: block; color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 2px; }
+.subtitle-kr { display: block; color: var(--color-ink-soft); font-size: var(--fs-kr); margin-top: 2px; }
 .learn-list-en { font-weight: 700; }
-.learn-list-kr { color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 4px; }
+.learn-list-kr { color: var(--color-ink-soft); font-size: var(--fs-kr); margin-top: 4px; }
 
 .phase-label { font-weight: 800; font-family: var(--font-display); color: var(--color-purple); margin: 18px 0 8px; }
-.phase-label .kr { display: block; font-weight: 600; font-size: 0.8rem; color: var(--color-ink-soft); margin-top: 2px; }
+.phase-label .kr { display: block; font-weight: 600; font-size: var(--fs-label); color: var(--color-ink-soft); margin-top: 2px; }
 
 .lesson-nav {
   position: fixed;
@@ -495,7 +545,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 .flash-front .word-kr {
   font-family: 'Noto Sans KR', sans-serif;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: var(--fs-kr);
   color: var(--color-ink-soft);
   margin-top: 2px;
 }
@@ -505,11 +555,11 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   transform: rotateY(180deg);
 }
 .flash-back .example-en { font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; }
-.flash-back .example-kr { font-size: 0.85rem; opacity: 0.92; font-family: 'Noto Sans KR', sans-serif; }
-.flash-back .hint { font-size: 0.72rem; opacity: 0.85; margin-top: 8px; }
+.flash-back .example-kr { font-size: var(--fs-kr); opacity: 0.92; font-family: 'Noto Sans KR', sans-serif; }
+.flash-back .hint { font-size: var(--fs-min); opacity: 0.85; margin-top: 8px; }
 .speak-chip {
   margin-top: 8px;
-  font-size: 0.78rem;
+  font-size: var(--fs-min);
   background: rgba(255,255,255,0.25);
   padding: 4px 10px;
   border-radius: 999px;
@@ -625,7 +675,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   font-family: var(--font-display);
   font-weight: 800;
   color: var(--color-primary-dark);
-  font-size: 0.9rem;
+  font-size: var(--fs-kr);
 }
 
 /* ---------- mystery box speaking activity ---------- */
@@ -659,7 +709,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   gap: 4px;
 }
 .mystery-box.opened .mystery-sentence {
-  font-size: 0.72rem;
+  font-size: var(--fs-min);
   font-family: 'Noto Sans KR', sans-serif;
   font-weight: 700;
   color: var(--color-ink-soft);
@@ -672,7 +722,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   color: #fff;
   width: 22px; height: 22px;
   border-radius: 50%;
-  font-size: 0.8rem;
+  font-size: var(--fs-label);
   display: flex; align-items: center; justify-content: center;
 }
 
@@ -738,7 +788,7 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
 footer.site-footer {
   text-align: center;
   color: var(--color-ink-soft);
-  font-size: 0.85rem;
+  font-size: var(--fs-kr);
   padding: 40px 20px 10px;
 }
 
@@ -758,7 +808,7 @@ footer.site-footer {
 .name-field-wrap label .kr {
   display: block;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: var(--fs-kr);
   color: var(--color-ink-soft);
   margin-top: 2px;
 }
@@ -783,7 +833,7 @@ footer.site-footer {
   text-align: center;
 }
 .name-field input:focus { outline: none; border-color: var(--color-secondary); }
-.name-field input::placeholder { font-size: 0.95rem; font-weight: 600; color: #b9b3c9; }
+.name-field input::placeholder { font-size: var(--fs-kr); font-weight: 600; color: #b9b3c9; }
 
 /* ---------- points chip ---------- */
 
@@ -793,7 +843,7 @@ footer.site-footer {
   gap: 6px;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: var(--fs-kr);
   background: #fff7ea;
   border: 2px solid var(--color-accent);
   color: var(--color-accent-dark);
@@ -808,7 +858,7 @@ footer.site-footer {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.78rem;
+  font-size: var(--fs-min);
   font-weight: 700;
   color: var(--color-ink-soft);
   background: var(--color-bg-alt);
@@ -835,7 +885,7 @@ footer.site-footer {
 .qa-block { display: flex; align-items: flex-start; gap: 10px; }
 .qa-block .qa-tag {
   flex-shrink: 0;
-  font-size: 0.7rem;
+  font-size: var(--fs-min);
   font-weight: 800;
   font-family: var(--font-display);
   padding: 3px 9px;
@@ -845,7 +895,7 @@ footer.site-footer {
 .qa-block.question .qa-tag { background: #f4edff; color: #7a4de0; }
 .qa-block.answer .qa-tag { background: #eafbf1; color: #2e9e63; }
 .qa-block .qa-en { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
-.qa-block .qa-kr { color: var(--color-ink-soft); font-weight: 600; font-size: 0.88rem; margin-top: 2px; }
+.qa-block .qa-kr { color: var(--color-ink-soft); font-weight: 600; font-size: var(--fs-kr); margin-top: 2px; }
 
 @media (max-width: 640px) {
   .qa-pair { grid-template-columns: 1fr; }
@@ -855,7 +905,7 @@ footer.site-footer {
 .answer-hint {
   display: inline-block;
   margin-top: 10px;
-  font-size: 0.88rem;
+  font-size: var(--fs-kr);
   font-weight: 700;
   color: var(--color-secondary-dark);
   background: var(--color-bg-alt);
@@ -961,7 +1011,7 @@ footer.site-footer {
   font-weight: 800;
   margin-bottom: 10px;
 }
-.intro-picker-label .kr { display: block; font-weight: 600; font-size: 0.8rem; color: var(--color-ink-soft); margin-top: 2px; }
+.intro-picker-label .kr { display: block; font-weight: 600; font-size: var(--fs-label); color: var(--color-ink-soft); margin-top: 2px; }
 .intro-chip-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
@@ -979,7 +1029,7 @@ footer.site-footer {
 }
 .intro-chip:hover { transform: translateY(-2px); }
 .intro-chip.picked { border-color: var(--color-primary); background: #fff0e3; transform: translateY(-2px) scale(1.04); }
-.intro-chip .chip-label { display: block; font-family: var(--font-display); font-weight: 700; font-size: 0.72rem; margin-top: 4px; }
+.intro-chip .chip-label { display: block; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-min); margin-top: 4px; }
 
 .intro-card {
   position: relative;
@@ -1000,7 +1050,7 @@ footer.site-footer {
 .intro-card .intro-card-kicker {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.78rem;
+  font-size: var(--fs-min);
   letter-spacing: 0.04em;
   color: var(--color-primary-dark);
   margin-bottom: 10px;
@@ -1017,7 +1067,7 @@ footer.site-footer {
   margin-top: 10px;
   color: var(--color-ink-soft);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--fs-kr);
 }
 
 @media (max-width: 600px) {
@@ -1034,7 +1084,7 @@ footer.site-footer {
   font-weight: 800;
   line-height: 1.25;
 }
-.jp-header-title #boardTitleKr { font-weight: 600; font-size: 0.8rem; }
+.jp-header-title #boardTitleKr { font-weight: 600; font-size: var(--fs-label); }
 
 .jp-grid {
   display: grid;
@@ -1050,8 +1100,8 @@ footer.site-footer {
   text-align: center;
   box-shadow: var(--shadow-soft);
 }
-.jp-cat-en { font-family: var(--font-display); font-weight: 800; font-size: 0.92rem; }
-.jp-cat-kr { font-size: 0.72rem; opacity: 0.9; margin-top: 2px; }
+.jp-cat-en { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-kr); }
+.jp-cat-kr { font-size: var(--fs-min); opacity: 0.9; margin-top: 2px; }
 
 .jp-cell {
   aspect-ratio: 4 / 3;
@@ -1105,7 +1155,7 @@ footer.site-footer {
   font-size: 1.3rem;
   line-height: 1.4;
 }
-.jp-clue-kr { margin-top: 8px; color: var(--color-ink-soft); font-size: 0.9rem; }
+.jp-clue-kr { margin-top: 8px; color: var(--color-ink-soft); font-size: var(--fs-kr); }
 
 .jp-answer-wrap {
   display: none;
@@ -1118,15 +1168,15 @@ footer.site-footer {
 .jp-answer-label {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.8rem;
+  font-size: var(--fs-label);
   color: #2e9e63;
   margin-bottom: 6px;
 }
 .jp-answer-en { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--color-ink); }
-.jp-answer-kr { margin-top: 4px; color: var(--color-ink-soft); font-size: 0.85rem; }
+.jp-answer-kr { margin-top: 4px; color: var(--color-ink-soft); font-size: var(--fs-kr); }
 
 @media (max-width: 600px) {
-  .jp-cat-en { font-size: 0.78rem; }
+  .jp-cat-en { font-size: var(--fs-min); }
   .jp-cat-kr { display: none; }
   .jp-cell { font-size: 1.1rem; }
 }
@@ -1138,9 +1188,84 @@ footer.site-footer {
   margin-top: 10px;
   min-height: 1.4em;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: var(--fs-kr);
   color: var(--color-ink-soft);
 }
 .speak-check-pass { color: #2e9e63; font-family: var(--font-display); font-weight: 800; }
 .speak-check-fail { color: #c9762f; }
 .speak-check.passed { animation: fadeUp 0.3s ease; }
+
+/* ============================================================
+   READING TYPOGRAPHY
+
+   Everything below is English a student is asked to read or say.
+   It all shares one face (--font-read) and sits at the top of the
+   size scale, so the line that matters is always the easiest one
+   on screen to read — the Korean gloss beside it stays in its own
+   face at a clearly smaller size.
+   ============================================================ */
+
+.flash-front .word-en,
+.pattern-box .pattern-en,
+.example-row .en,
+.qa-en,
+.choice-label,
+.mystery-sentence,
+.prompt-en,
+.intro-card .intro-sentence,
+.jp-clue-en,
+.jp-answer-en,
+.word-tile,
+.slot.filled,
+.instr-en,
+.checkin-btn .label-en,
+.subtitle-en,
+.learn-list-en {
+  font-family: var(--font-read);
+  letter-spacing: 0.005em;
+}
+
+/* the biggest reading text: single words and target sentences */
+.flash-front .word-en,
+.pattern-box .pattern-en,
+.intro-card .intro-sentence,
+.jp-clue-en,
+.mystery-sentence,
+.prompt-en {
+  font-size: var(--fs-read);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.pattern-box .pattern-en { font-size: calc(var(--fs-read) * 1.15); font-weight: 700; }
+
+/* tappable answers need to be readable at a glance from across a Zoom call */
+.choice-label,
+.word-tile,
+.qa-en,
+.example-row .en,
+.jp-answer-en {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.instr-en {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+/* Korean support lines: same face everywhere, never below the floor */
+.flash-front .word-kr,
+.flash-back .example-kr,
+.pattern-box .pattern-kr,
+.instr-kr,
+.subtitle-kr,
+.learn-list-kr,
+.qa-kr,
+.checkin-btn .label,
+.mystery-sentence-kr,
+.prompt-kr,
+.intro-card .intro-sentence-kr {
+  font-family: var(--font-kr);
+  font-size: var(--fs-kr);
+  line-height: 1.55;
+}

@@ -112,7 +112,7 @@
   display: inline-block;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.72rem;
+  font-size: var(--fs-min);
   padding: 3px 12px;
   border-radius: 999px;
   margin: 8px 0 2px;
@@ -145,7 +145,7 @@
   align-items: center;
   gap: 6px;
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: var(--fs-label);
   color: var(--color-ink-soft);
 }
 .wm-legend i {
@@ -164,7 +164,7 @@
   font-weight: 800;
   color: var(--color-primary-dark);
 }
-.wm-progress .kr { font-size: 0.78rem; font-weight: 600; color: var(--color-ink-soft); margin-left: 6px; }
+.wm-progress .kr { font-size: var(--fs-min); font-weight: 600; color: var(--color-ink-soft); margin-left: 6px; }
 
 .view-toggle {
   display: inline-flex;
@@ -175,7 +175,7 @@
 }
 .view-toggle button {
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: var(--fs-label);
   padding: 6px 16px;
   border-radius: 999px;
   color: var(--color-ink-soft);

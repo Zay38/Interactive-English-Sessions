@@ -39,16 +39,16 @@
   .checkin-btn:hover { transform: translateY(-3px); border-color: var(--color-accent-dark); }
   .checkin-btn.picked { border-color: var(--color-primary); background: #fff0e3; }
   .checkin-btn .label-en { display:block; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-top: 6px; }
-  .checkin-btn .label { display:block; font-weight: 600; font-size: 0.78rem; color: var(--color-ink-soft); margin-top: 2px; }
+  .checkin-btn .label { display:block; font-weight: 600; font-size:var(--fs-kr); color: var(--color-ink-soft); margin-top: 2px; }
   .welcome-hero { position: relative; overflow: hidden; text-align: center; padding: 30px 10px 10px; border-radius: var(--radius-lg); }
   .welcome-hero .emoji-row { font-size: 3rem; margin-bottom: 10px; }
   .subtitle-en { display: block; font-weight: 700; color: var(--color-ink); }
-  .subtitle-kr { display: block; color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 2px; }
+  .subtitle-kr { display: block; color: var(--color-ink-soft); font-size:var(--fs-kr); margin-top: 2px; }
   .learn-list-en { font-weight: 700; }
-  .learn-list-kr { color: var(--color-ink-soft); font-size: 0.85rem; margin-top: 4px; }
+  .learn-list-kr { color: var(--color-ink-soft); font-size:var(--fs-kr); margin-top: 4px; }
   section.block { margin-bottom: 36px; }
   .phase-label { font-weight: 800; font-family: var(--font-display); color: var(--color-purple); margin: 18px 0 8px; }
-  .phase-label .kr { display: block; font-weight: 600; font-size: 0.8rem; color: var(--color-ink-soft); margin-top: 2px; }
+  .phase-label .kr { display: block; font-weight: 600; font-size:var(--fs-kr); color: var(--color-ink-soft); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -89,7 +89,7 @@
           </div>
         </div>
         <div class="spacer"></div>
-        <button class="btn" id="startBtn" type="button">Let's Start! 🚀 <span class="kr" style="font-size:0.8em;font-weight:600;">시작하기</span></button>
+        <button class="btn" id="startBtn" type="button">Let's Start! 🚀 <span class="kr" style="font-size:var(--fs-kr);font-weight:600;">시작하기</span></button>
       </div>
     </div>
     <div class="card" style="margin-top:20px;">
@@ -98,7 +98,7 @@
       <p class="learn-list-kr kr">숫자 · 이름과 나이 · 좋아하는 것 · 나만의 자기소개 카드 · 말하기 활동 · 포인트 모으기</p>
     </div>
     <div class="center" style="margin-top:16px;">
-      <a class="btn ghost small" href="../family-feelings/jeopardy.html">📚 Review Last Time: Unit 1 <span class="kr" style="font-size:0.8em;">지난 시간 복습하기</span></a>
+      <a class="btn ghost small" href="../family-feelings/jeopardy.html">📚 Review Last Time: Unit 1 <span class="kr" style="font-size:var(--fs-kr);">지난 시간 복습하기</span></a>
     </div>
   </section>
 
@@ -302,11 +302,11 @@
         </div>
 
         <div class="row" style="justify-content:center; margin-top:16px;">
-          <button class="btn ghost" id="replayBtn" type="button">↺ Replay <span class="kr" style="font-size:0.8em;">다시 하기</span></button>
-          <a class="btn secondary" href="jeopardy.html">🎯 Review Game <span class="kr" style="font-size:0.8em;">복습 게임</span></a>
-          <a class="btn" href="../../index.html">🏠 Home <span class="kr" style="font-size:0.8em;">홈으로</span></a>
+          <button class="btn ghost" id="replayBtn" type="button">↺ Replay <span class="kr" style="font-size:var(--fs-kr);">다시 하기</span></button>
+          <a class="btn secondary" href="jeopardy.html">🎯 Review Game <span class="kr" style="font-size:var(--fs-kr);">복습 게임</span></a>
+          <a class="btn" href="../../index.html">🏠 Home <span class="kr" style="font-size:var(--fs-kr);">홈으로</span></a>
         </div>
-        <h3 style="margin-top:28px;">🏅 Leaderboard <span class="kr" style="font-size:0.8rem;">이 기기의 랭킹</span></h3>
+        <h3 style="margin-top:28px;">🏅 Leaderboard <span class="kr" style="font-size:var(--fs-kr);">이 기기의 랭킹</span></h3>
         <div id="leaderboardWrap"></div>
       </div>
     </div>
