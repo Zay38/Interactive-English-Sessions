@@ -516,20 +516,33 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   margin-bottom: 10px;
 }
 
+/* Both faces live in the SAME grid cell rather than being absolutely
+   positioned. Absolute faces contribute no height, so the card had to
+   carry a fixed one — and the moment a Korean sentence wrapped to a
+   second line the text spilled straight out through the rounded corner.
+   Stacked in one cell, the TALLER face sets the height and the card
+   always grows to fit whatever is inside it. */
 .flashcard {
   perspective: 1000px;
-  height: 190px;
   cursor: pointer;
+  /* a one-cell grid so the inner stretches to the row height — without
+     this, each card in a row drew its own box at its own content height
+     and the row looked ragged */
+  display: grid;
+  min-height: 200px;
 }
 .flashcard-inner {
+  grid-area: 1 / 1;
   position: relative;
-  width: 100%; height: 100%;
+  display: grid;
+  width: 100%;
   transition: transform 0.5s cubic-bezier(.2,.8,.2,1);
   transform-style: preserve-3d;
 }
 .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
 .flash-face {
-  position: absolute; inset: 0;
+  grid-area: 1 / 1;
+  min-width: 0;
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
@@ -537,8 +550,11 @@ button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
   justify-content: center;
   backface-visibility: hidden;
   box-shadow: var(--shadow-soft);
-  padding: 12px;
+  padding: 14px 12px;
   text-align: center;
+  /* long words and Korean phrases wrap instead of pushing the card open */
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 .flash-front { background: #fff; border: 3px solid var(--color-border); }
 .flash-front .emoji { font-size: 3rem; margin-bottom: 6px; }
@@ -1093,6 +1109,9 @@ footer.site-footer {
   gap: 8px;
   margin-top: 20px;
 }
+/* a grid item's default min-width is auto, so a long category name
+   refuses to shrink and pushes the whole board wider than the page */
+.jp-grid > * { min-width: 0; }
 .jp-cat {
   background: var(--color-primary);
   color: #fff;
@@ -1103,6 +1122,15 @@ footer.site-footer {
 }
 .jp-cat-en { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-kr); }
 .jp-cat-kr { font-size: var(--fs-min); opacity: 0.9; margin-top: 2px; }
+/* Four columns on a phone leave about 80px per heading, and a single
+   long word like "Vocabulary" has nowhere to break — it ran straight
+   out of its tile. Let it hyphenate and step the type down. */
+.jp-cat-en, .jp-cat-kr { overflow-wrap: anywhere; hyphens: auto; }
+@media (max-width: 560px) {
+  .jp-cat { padding: 8px 4px; }
+  .jp-cat-en { font-size: var(--fs-min); }
+  .jp-cat-kr { font-size: 0.8rem; }
+}
 
 .jp-cell {
   aspect-ratio: 4 / 3;
@@ -1143,7 +1171,7 @@ footer.site-footer {
   text-align: center;
   animation: fadeUp 0.3s ease;
 }
-.jp-modal .row { justify-content: center; }
+.jp-modal .row { justify-content: center; flex-wrap: wrap; }
 .jp-close {
   position: absolute;
   top: -12px;
@@ -1269,6 +1297,110 @@ footer.site-footer {
   font-family: var(--font-kr);
   font-size: var(--fs-kr);
   line-height: 1.55;
+}
+
+/* ============================================================
+   KOREAN ON DEMAND
+   Paired with korean-toggle.js. Every Korean line that is a
+   TRANSLATION of the English being taught is listed here and is
+   hidden until the student asks for it. Instructions, headings and
+   button labels are deliberately NOT in this list — those are how
+   a child operates the page, not what they are learning.
+   ============================================================ */
+
+html[data-kr="off"] .word-kr,
+html[data-kr="off"] .example-kr,
+html[data-kr="off"] .pattern-kr,
+html[data-kr="off"] .example-row .kr,
+html[data-kr="off"] .qa-kr,
+html[data-kr="off"] .prompt-kr,
+html[data-kr="off"] .intro-sentence-kr,
+html[data-kr="off"] .checkin-btn .label,
+html[data-kr="off"] .chat-kr,
+html[data-kr="off"] .reply-kr,
+html[data-kr="off"] .said-line-kr,
+html[data-kr="off"] .scene-wrapup-kr,
+html[data-kr="off"] .jp-clue-kr,
+html[data-kr="off"] .jp-answer-kr,
+html[data-kr="off"] .kr-gloss {
+  display: none;
+}
+
+/* Revealed Korean fades in rather than snapping, so the card
+   growing by a line doesn't feel like a glitch. */
+html[data-kr="on"] .word-kr,
+html[data-kr="on"] .example-kr,
+html[data-kr="on"] .chat-kr,
+html[data-kr="on"] .reply-kr,
+html[data-kr="on"] .qa-kr,
+html[data-kr="on"] .prompt-kr,
+html[data-kr="on"] .kr-gloss {
+  animation: krFade 0.28s ease;
+}
+@keyframes krFade {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.kr-reveal {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 220;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(45, 42, 61, 0.22);
+  overflow: hidden;
+}
+.kr-reveal[hidden] { display: none; }
+/* lesson pages keep a fixed nav bar glued to the bottom edge */
+.kr-reveal.above-nav { bottom: 84px; }
+
+.kr-reveal-btn,
+.kr-pin {
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+.kr-reveal-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 10px 16px;
+  line-height: 1.15;
+  text-align: left;
+}
+.kr-reveal-btn:hover { background: #fff4e2; }
+.kr-reveal-label {
+  font-family: var(--font-kr);
+  font-size: var(--fs-kr);
+  font-weight: 700;
+}
+.kr-reveal-en {
+  font-family: var(--font-read);
+  font-size: var(--fs-min);
+  color: var(--color-ink-soft);
+}
+.kr-pin {
+  padding: 0 12px;
+  font-size: 1rem;
+  border-left: 2px solid var(--color-border);
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+.kr-pin.active { filter: none; opacity: 1; background: #fff4e2; }
+.kr-pin:hover { background: #fff4e2; }
+
+@media (max-width: 520px) {
+  .kr-reveal-en { display: none; }
+  .kr-reveal-btn { padding: 10px 14px; }
 }
 
 /* ============================================================

@@ -66,7 +66,10 @@ const Activities = (() => {
       const back = el('div', { class: 'flash-face flash-back' }, [
         el('div', { class: 'example-en' }, item.exampleEn || item.en),
         el('div', { class: 'example-kr' }, item.exampleKr || item.kr),
-        el('div', { class: 'hint' }, '👆 Tap to flip back 다시 눌러서 돌아가기'),
+        el('div', { class: 'hint' }, [
+          '👆 Tap to flip back',
+          el('span', { class: 'kr kr-gloss' }, ' 다시 눌러서 돌아가기'),
+        ]),
       ]);
       inner.appendChild(front);
       inner.appendChild(back);
@@ -160,7 +163,7 @@ const Activities = (() => {
       container.appendChild(el('div', { class: 'step-label' }, `Question ${index + 1} / ${questions.length}`));
       if (q.emoji) container.appendChild(el('div', { class: 'center', style: 'font-size:3rem;margin:10px 0;' }, q.emoji));
       container.appendChild(el('h3', {}, q.stemEn));
-      container.appendChild(el('p', { class: 'muted kr' }, q.stemKr));
+      container.appendChild(el('p', { class: 'muted kr kr-gloss' }, q.stemKr));
 
       const grid = el('div', { class: 'choice-grid' });
       const feedback = el('div', { class: 'feedback-banner' });
@@ -247,7 +250,7 @@ const Activities = (() => {
       ]);
       container.appendChild(header);
       container.appendChild(el('div', { class: 'center', style: 'font-size:3.2rem;margin:6px 0;' }, item.emoji));
-      if (item.kr) container.appendChild(el('p', { class: 'muted kr center' }, item.kr));
+      if (item.kr) container.appendChild(el('p', { class: 'muted kr center kr-gloss' }, item.kr));
 
       const slots = el('div', { class: 'sentence-slots' });
       item.words.forEach((_, i) => slots.appendChild(el('div', { class: 'slot' }, '')));
@@ -459,7 +462,10 @@ const Activities = (() => {
         el('div', { class: 'prompt-en' }, item.en),
         el('div', { class: 'prompt-kr' }, item.kr),
         el('div', { style: 'margin-top:14px;' }, speakBtn(item.en)),
-        item.hintEn ? el('div', { class: 'answer-hint' }, `👉 ${item.hintEn} (${item.hintKr})`) : null,
+        item.hintEn ? el('div', { class: 'answer-hint' }, [
+          `👉 ${item.hintEn}`,
+          item.hintKr ? el('span', { class: 'kr kr-gloss' }, ` (${item.hintKr})`) : null,
+        ]) : null,
       ]);
       cardWrap.appendChild(card);
     }

@@ -19,6 +19,7 @@
     '.unit-card', '.checkin-btn', '.word-tile', '.swatch', '.flashcard',
     '.mystery-box', '.intro-chip', '.icon-btn', '.speaker-btn',
     '.view-toggle button', '.jp-mini-link', '.wm-pin', '.dot',
+    '.kr-reveal-btn', '.kr-pin',
   ].join(',');
 
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

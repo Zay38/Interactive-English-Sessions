@@ -20,7 +20,8 @@
   padding: 16px 20px;
   margin-bottom: 20px;
 }
-.scene-setting-emoji { font-size: 2.4rem; line-height: 1; }
+/* an emoji glyph draws taller than 1em, so line-height:1 clipped it */
+.scene-setting-emoji { font-size: 2.4rem; line-height: 1.15; }
 .scene-setting-en { font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; }
 .scene-setting-kr { color: var(--color-ink-soft); font-size: var(--fs-kr); margin-top: 2px; }
 
