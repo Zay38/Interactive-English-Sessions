@@ -161,6 +161,15 @@ const WorldMap = (() => {
       zoomed = u;
       mount.classList.add('is-zoomed');
       card.classList.remove('show');
+      /* Pull the map into view first. The card slides up from the map's
+         bottom edge, and on a laptop that edge can sit below the fold —
+         a student would then tap a pin and never see the Start button. */
+      try {
+        mount.scrollIntoView({
+          behavior: reduceMotion() ? 'auto' : 'smooth',
+          block: 'center',
+        });
+      } catch (e) { mount.scrollIntoView(); }
       flyTo(svg, frameFor(px(u), py(u), 3.2), 620, () => showCard(u, isDone));
     }
 
