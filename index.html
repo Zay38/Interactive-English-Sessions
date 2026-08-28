@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-kr="off">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,7 +16,10 @@
   .level-heading .level-sub { color: var(--color-ink-soft); font-weight: 600; font-size: 0.9rem; }
   .level-pill {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 34px; height: 34px; border-radius: 10px;
+    /* min-, not fixed: "초급" wrapped to two lines inside a 34px box
+       and pushed its own text out through the bottom. */
+    min-width: 34px; min-height: 34px; padding: 4px 9px;
+    white-space: nowrap; border-radius: 10px;
     font-family: var(--font-display); font-weight: 800; font-size:var(--fs-kr); color: #fff;
   }
   .level-pill.beg { background: var(--color-green); }
@@ -124,6 +127,7 @@
     setView(saved);
   });
 </script>
+<script src="assets/js/korean-toggle.js"></script>
 <script src="assets/js/tap-feedback.js"></script>
 </body>
 </html>
