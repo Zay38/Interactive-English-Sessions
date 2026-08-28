@@ -50,9 +50,16 @@
     setTimeout(() => r.remove(), 900);
   }
 
+  /* SVG elements get a DIFFERENT class on purpose.
+     A CSS `transform` overrides an SVG element's transform="translate(...)"
+     ATTRIBUTE outright, so applying the generic press-scale to a map pin
+     teleported it to the origin the instant the pointer went down — the
+     pointer then came up somewhere else and no click was ever produced.
+     SVG targets are styled through their children instead. */
   function press(el, on) {
     if (!el) return;
-    el.classList.toggle('is-pressed', on);
+    const cls = (el instanceof SVGElement) ? 'is-tapped' : 'is-pressed';
+    el.classList.toggle(cls, on);
   }
 
   let pressed = null;

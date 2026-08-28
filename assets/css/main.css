@@ -1301,7 +1301,11 @@ footer.site-footer {
   to   { transform: translate(-50%, -50%) scale(1.9);  opacity: 0; }
 }
 
-/* the squash. Kept small so it reads as tactile, not bouncy. */
+/* The squash. Kept small so it reads as tactile, not bouncy.
+   HTML elements only — never SVG. Setting any CSS transform on an SVG
+   node overrides its transform="translate(...)" attribute, which would
+   fling the element to the origin mid-press and swallow the click. SVG
+   targets use .is-tapped and are styled via their children instead. */
 .is-pressed {
   transform: scale(0.955) !important;
   transition: transform 0.09s ease-out !important;
@@ -1310,7 +1314,7 @@ footer.site-footer {
    compose with it rather than replace it. */
 .unit-card.is-pressed { transform: translateY(-2px) scale(0.975) !important; }
 .flashcard.is-pressed { transform: scale(0.97) !important; }
-.wm-pin.is-pressed .wm-dot { transform: scale(1.32); }
+.wm-pin.is-tapped .wm-dot { transform: scale(1.32); }
 .jp-cell.is-pressed { transform: translateY(1px) scale(0.97) !important; }
 
 @media (prefers-reduced-motion: reduce) {
